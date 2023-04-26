@@ -1,10 +1,10 @@
 let myImage;
 function preload() {
-  myImage = loadImage('background.svg');
+  myImage = loadImage('/img/background-svg.svg');
 }
 
 function setup() {
-  createCanvas(800, 600);
+  createCanvas(windowWidth, windowHeight);
 }
 
 function drawToxicBarrel(x, y) {
@@ -81,7 +81,7 @@ for (let i = 0; i < numLinks; i++) {
 
 function draw() {
   background(255);
-  image(myImage, 0, 0, 800, 600); // Draw the background image first
+  image(myImage,0, 0, windowWidth, windowHeight); // Draw the background image first
   drawToxicBarrel(100, 300);
   smallerUnderwaterMine(300, 200);
   let mineX = width / 2 + 20 * sin(frameCount * 0.02); // Calculate mine's x position with a slight horizontal movement
@@ -116,8 +116,6 @@ function smallerUnderwaterMine(x, y) {
   // Draw the main body of the mine
   ellipse(x, y, 100 * scaleFactor, 100 * scaleFactor);
   ellipse(x, y, 3, 3);
-
-  
 
   // Draw the spikes
   let numSpikes = 16;
