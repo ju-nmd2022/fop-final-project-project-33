@@ -1,10 +1,12 @@
+let myImage;
+function preload() {
+  myImage = loadImage('background.svg');
+}
+
 function setup() {
   createCanvas(800, 600);
 }
 
-<<<<<<< Updated upstream
-let myImage;
-=======
 function drawToxicBarrel(x, y) {
   fill(255, 255, 0); // Yellow color
   stroke(0); // Black outline
@@ -14,7 +16,6 @@ function drawToxicBarrel(x, y) {
   let barrelWidth = 60; // Reduced width
   let barrelHeight = 90; // Reduced height
   let curveAmount = 18; // Reduced curve amount
->>>>>>> Stashed changes
 
   beginShape();
   vertex(x - barrelWidth / 2, y - barrelHeight / 2 + curveAmount);
@@ -75,13 +76,17 @@ for (let i = 0; i < numLinks; i++) {
   }
 }
 
-<<<<<<< Updated upstream
 //bezierCurves -> vertex(x1,y1)
 //      bezierVertex(x2,y2)
 
 function draw() {
   background(255);
-  image(myImage, 0, 0, 800, 600);
+  image(myImage, 0, 0, 800, 600); // Draw the background image first
+  drawToxicBarrel(100, 300);
+  smallerUnderwaterMine(300, 200);
+  let mineX = width / 2 + 20 * sin(frameCount * 0.02); // Calculate mine's x position with a slight horizontal movement
+  underwaterMine(mineX, height / 2);
+
   //Draw the body of the submarine
   noStroke();
   fill(100, 150, 200);
@@ -101,7 +106,6 @@ function draw() {
   //rect(x,y,w,[h],[topleft],[topright],[bottomright],[bottomleft])
   fill(33);
   rect(165, 95, 65, 50, 20, 59, 0);
-=======
 function smallerUnderwaterMine(x, y) {
   let scaleFactor = 0.4; // 40% smaller
 
@@ -142,15 +146,4 @@ function smallerUnderwaterMine(x, y) {
     ellipse(swayX, linkY, linkSize, linkSize);
   }
 }
-
-
-
-function draw() {
-  background(255);
-  drawToxicBarrel(100, 300);
-
-  smallerUnderwaterMine(300, 200);
-  let mineX = width / 2 + 20 * sin(frameCount * 0.02); // Calculate mine's x position with a slight horizontal movement
-  underwaterMine(mineX, height / 2);
->>>>>>> Stashed changes
 }
