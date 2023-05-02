@@ -24,7 +24,7 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   
   // Create 10 random toxic barrels
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 20; i++) {
     let x, y, scaleFactor;
     do {
       x = random(width);
@@ -35,17 +35,19 @@ function setup() {
     occupiedPositions.push({ x: x, y: y });
   }
 
-  // Create 10 random underwater mines
-  for (let i = 0; i < 10; i++) {
-    let x, y, scaleFactor;
-    do {
-      x = random(width);
-      y = random(height);
-      scaleFactor = random(0.5, 1.0);
-    } while (checkOverlap(x, y, 100 * scaleFactor));
-    mines.push({ x: x, y: y, scaleFactor: scaleFactor });
-    occupiedPositions.push({ x: x, y: y });
-  }
+ // Create 10 random underwater mines
+for (let i = 0; i < 10; i++) {
+  let x, y, scaleFactor, offsetX;
+  do {
+    x = random(width);
+    y = random(height);
+    scaleFactor = random(0.5, 1.0);
+  } while (checkOverlap(x, y, 100 * scaleFactor));
+  offsetX = random(TWO_PI); // Add this line to assign a random offset value
+  mines.push({ x: x, y: y, scaleFactor: scaleFactor, offsetX: offsetX }); // Update this line to include offsetX
+  occupiedPositions.push({ x: x, y: y });
+}
+
 }
 
 let propellerAngle = 0;
@@ -53,7 +55,7 @@ let propellerAngle = 0;
 function drawSubmarine(x, y) {
   push();
   translate(x, y);
-  scale(0.5); // Apply a 50% scale transformation
+  scale(0.3); // Apply a 50% scale transformation
 
   // Draw the main body of the submarine
   noStroke();
@@ -66,7 +68,7 @@ function drawSubmarine(x, y) {
 
   // Draw the top part of the submarine
   fill(50, 100, 150);
-  arc(110, -70, 100, 50, PI, TWO_PI, OPEN);
+  arc(100, -55, 100, 50, PI, TWO_PI, OPEN);
 
   // Draw the windows of the submarine
   fill(33);
@@ -82,9 +84,9 @@ function drawSubmarine(x, y) {
 
   // Draw the magnet
   fill(200, 0, 0);
-  ellipse(-80, 0, 40);
+  ellipse(-60, 0, 40);
   fill(255);
-  arc(-80, 0, 40, 40, PI, TWO_PI);
+  arc(-60, 0, 40, 40, PI, TWO_PI);
 
   // Draw the multi-blade propeller
   stroke(33);
@@ -162,7 +164,7 @@ function smallerUnderwaterMine(x, y) {
 function drawToxicBarrel(x, y, scaleFactor) {
   push();
   translate(x, y);
-  scale(scaleFactor);
+  scale(scaleFactor * 0.8);
   fill(255, 255, 0); // Yellow color
   stroke(0); // Black outline
   strokeWeight(2);
@@ -295,13 +297,13 @@ function draw() {
 
 function draw() {
   background(255);
-  image(myImage,0, 0, windowWidth, windowHeight); // Draw the background image first
+  image(myImage, 0, 0, windowWidth, windowHeight); // Draw the background image first
 
   // Draw toxic barrels
   for (let barrel of barrels) {
     push();
     scale(barrel.scaleFactor);
-    drawToxicBarrel(barrel.x / barrel.scaleFactor, barrel.y / barrel.scaleFactor);
+    drawToxicBarrel(barrel.x / barrel.scaleFactor, barrel.y / barrel.scaleFactor, barrel.scaleFactor);
     pop();
   }
 
@@ -332,5 +334,3 @@ function draw() {
     submarineY += moveAmount;
   }
 }
-
-
