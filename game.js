@@ -12,7 +12,7 @@ function windowResized() {
 }
 
 function preload() {
-  myImage = loadImage('/img/background-svg.svg');
+  myImage = loadImage("/img/background2.png");
 }
 
 function checkOverlap(x, y, minDist) {
@@ -27,7 +27,7 @@ function checkOverlap(x, y, minDist) {
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  
+
   // Creating max 20 random toxic barrels
   for (let i = 0; i < 20; i++) {
     let x, y, scaleFactor;
@@ -40,19 +40,18 @@ function setup() {
     occupiedPositions.push({ x: x, y: y });
   }
 
- // Creating max 10 random underwater mines
-for (let i = 0; i < 10; i++) {
-  let x, y, scaleFactor, offsetX;
-  do {
-    x = random(width);
-    y = random(height);
-    scaleFactor = random(0.5, 1.0);
-  } while (checkOverlap(x, y, 100 * scaleFactor));
-  offsetX = random(TWO_PI); // Add this line to assign a random offset value
-  mines.push({ x: x, y: y, scaleFactor: scaleFactor, offsetX: offsetX }); // Update this line to include offsetX
-  occupiedPositions.push({ x: x, y: y });
-}
-
+  // Creating max 10 random underwater mines
+  for (let i = 0; i < 10; i++) {
+    let x, y, scaleFactor, offsetX;
+    do {
+      x = random(width);
+      y = random(height);
+      scaleFactor = random(0.5, 1.0);
+    } while (checkOverlap(x, y, 100 * scaleFactor));
+    offsetX = random(TWO_PI); // Add this line to assign a random offset value
+    mines.push({ x: x, y: y, scaleFactor: scaleFactor, offsetX: offsetX }); // Update this line to include offsetX
+    occupiedPositions.push({ x: x, y: y });
+  }
 }
 
 function drawBase() {
@@ -100,11 +99,10 @@ function drawBase() {
   pop();
 }
 
-
 function drawSubmarine(x, y) {
   push();
   translate(x, y);
-  scale(0.3); 
+  scale(0.3);
 
   // the main body of the submarine
   noStroke();
@@ -215,7 +213,7 @@ function drawToxicBarrel(x, y, scaleFactor) {
   translate(x, y);
   scale(scaleFactor * 0.8);
   fill(255, 255, 0);
-  stroke(0); 
+  stroke(0);
   strokeWeight(2);
 
   // the rounded barrel
@@ -225,11 +223,39 @@ function drawToxicBarrel(x, y, scaleFactor) {
 
   beginShape();
   vertex(x - barrelWidth / 2, y - barrelHeight / 2 + curveAmount);
-  bezierVertex(x - barrelWidth / 2, y - barrelHeight / 2, x - barrelWidth / 2 + curveAmount, y - barrelHeight / 2, x, y - barrelHeight / 2);
-  bezierVertex(x + barrelWidth / 2 - curveAmount, y - barrelHeight / 2, x + barrelWidth / 2, y - barrelHeight / 2, x + barrelWidth / 2, y - barrelHeight / 2 + curveAmount);
+  bezierVertex(
+    x - barrelWidth / 2,
+    y - barrelHeight / 2,
+    x - barrelWidth / 2 + curveAmount,
+    y - barrelHeight / 2,
+    x,
+    y - barrelHeight / 2
+  );
+  bezierVertex(
+    x + barrelWidth / 2 - curveAmount,
+    y - barrelHeight / 2,
+    x + barrelWidth / 2,
+    y - barrelHeight / 2,
+    x + barrelWidth / 2,
+    y - barrelHeight / 2 + curveAmount
+  );
   vertex(x + barrelWidth / 2, y + barrelHeight / 2 - curveAmount);
-  bezierVertex(x + barrelWidth / 2, y + barrelHeight / 2, x + barrelWidth / 2 - curveAmount, y + barrelHeight / 2, x, y + barrelHeight / 2);
-  bezierVertex(x - barrelWidth / 2 + curveAmount, y + barrelHeight / 2, x - barrelWidth / 2, y + barrelHeight / 2, x - barrelWidth / 2, y + barrelHeight / 2 - curveAmount);
+  bezierVertex(
+    x + barrelWidth / 2,
+    y + barrelHeight / 2,
+    x + barrelWidth / 2 - curveAmount,
+    y + barrelHeight / 2,
+    x,
+    y + barrelHeight / 2
+  );
+  bezierVertex(
+    x - barrelWidth / 2 + curveAmount,
+    y + barrelHeight / 2,
+    x - barrelWidth / 2,
+    y + barrelHeight / 2,
+    x - barrelWidth / 2,
+    y + barrelHeight / 2 - curveAmount
+  );
   endShape(CLOSE);
 
   // the rounded top
@@ -258,7 +284,7 @@ function underwaterMine(x, y) {
   // the spikes
   let numSpikes = 12;
   let spikeLength = 15;
-  strokeWeight(8); 
+  strokeWeight(8);
   for (let i = 0; i < numSpikes; i++) {
     let angle = (TWO_PI / numSpikes) * i;
     let startX = x + cos(angle) * 50;
@@ -269,20 +295,19 @@ function underwaterMine(x, y) {
     line(startX, startY, endX, endY);
   }
 
-// the chain
-strokeWeight(2);
-noFill();
-let chainLength = 100;
-let numLinks = 7;
-let linkSize = 15;
-let swayAmount = 3; 
-for (let i = 0; i < numLinks; i++) {
-  let linkY = y + 50 + (chainLength / numLinks) * i;
-  let swayX = x + swayAmount * sin(frameCount * 0.05 + i); // Calculate sway based on frameCount and link index
-  ellipse(swayX, linkY, linkSize, linkSize);
+  // the chain
+  strokeWeight(2);
+  noFill();
+  let chainLength = 100;
+  let numLinks = 7;
+  let linkSize = 15;
+  let swayAmount = 3;
+  for (let i = 0; i < numLinks; i++) {
+    let linkY = y + 50 + (chainLength / numLinks) * i;
+    let swayX = x + swayAmount * sin(frameCount * 0.05 + i); // Calculate sway based on frameCount and link index
+    ellipse(swayX, linkY, linkSize, linkSize);
   }
 }
-
 
 /*
 
@@ -350,7 +375,10 @@ function draw() {
   for (let barrel of barrels) {
     push();
     scale(barrel.scaleFactor);
-    drawToxicBarrel(barrel.x / barrel.scaleFactor, barrel.y / barrel.scaleFactor);
+    drawToxicBarrel(
+      barrel.x / barrel.scaleFactor,
+      barrel.y / barrel.scaleFactor
+    );
     pop();
   }
 
@@ -358,7 +386,8 @@ function draw() {
   for (let mine of mines) {
     push();
     scale(mine.scaleFactor);
-    let mineX = mine.x / mine.scaleFactor + 20 * sin(frameCount * 0.02 + mine.offsetX);
+    let mineX =
+      mine.x / mine.scaleFactor + 20 * sin(frameCount * 0.02 + mine.offsetX);
     smallerUnderwaterMine(mineX, mine.y / mine.scaleFactor);
     pop();
   }
@@ -387,4 +416,3 @@ function draw() {
     submarineY += moveAmount;
   }
 }
-
