@@ -17,6 +17,9 @@ let timeLeft = 60;
 let barrels = [];
 let mines = [];
 let occupiedPositions = [];
+let explosions = [];
+
+let submarineVisible = true;
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
@@ -43,9 +46,9 @@ function setup() {
   for (let i = 0; i < 20; i++) {
     let x, y, scaleFactor;
     do {
-      x = random(width);
-      y = random(height);
       scaleFactor = random(0.5, 1.0);
+      x = random(45 * scaleFactor, width - 45 * scaleFactor); // Update this line
+      y = random(45 * scaleFactor, height - 45 * scaleFactor); // Update this line
     } while (checkOverlap(x, y, 100 * scaleFactor));
     barrels.push({ x: x, y: y, scaleFactor: scaleFactor });
     occupiedPositions.push({ x: x, y: y });
@@ -55,9 +58,9 @@ function setup() {
   for (let i = 0; i < 10; i++) {
     let x, y, scaleFactor, offsetX;
     do {
-      x = random(width);
-      y = random(height);
       scaleFactor = random(0.5, 1.0);
+      x = random(50 * scaleFactor, width - 50 * scaleFactor); // Update this line
+      y = random(50 * scaleFactor, height - 50 * scaleFactor); // Update this line
     } while (checkOverlap(x, y, 100 * scaleFactor));
     offsetX = random(TWO_PI); // Add this line to assign a random offset value
     mines.push({ x: x, y: y, scaleFactor: scaleFactor, offsetX: offsetX }); // Update this line to include offsetX
@@ -321,74 +324,112 @@ function underwaterMine(x, y) {
   }
 }
 
-/*
+function explosion(x, y) {
+  let opacity = 255;
+  let radius = 0;
+  let growthRate = 1;
+  let duration = 120;
 
-function draw() {
-  background(255);
-  image(myImage,0, 0, windowWidth, windowHeight); // Draw the background image first
-  drawToxicBarrel(100, 300);
-  smallerUnderwaterMine(300, 200);
-  let mineX = width / 2 + 20 * sin(frameCount * 0.02); // Calculate mine's x position with a slight horizontal movement
-  underwaterMine(mineX, height / 2);
-
-  /Draw the body of the submarine
-  noStroke();
-  fill(100, 150, 200);
-  beginShape();
-  vertex(100, 200);
-  bezierVertex(120, 100, 280, 140, 380, 200);
-  bezierVertex(300, 260, 120, 300, 100, 200);
-  endShape(CLOSE);
-  //Draw the windows of the submarine
-  push();
-  fill(33);
-  ellipse(145, 200, 25);
-  ellipse(195, 200, 25);
-  ellipse(245, 200, 25);
-  ellipse(295, 200, 25);
-  pop();
-  stroke(33);
-  strokeWeight(10);
-  line(100, 200, 60, 200);
-
-  // Draw the magnet
-  fill(200, 0, 0);
-  ellipse(40, 200, 30);
-  //rect(x,y,w,[h],[topleft],[topright],[bottomright],[bottomleft])
-  fill(33);
-  rect(165, 95, 65, 50, 20, 59, 0);
-
-
-  drawSubmarine(submarineX, submarineY);
-  propellerAngle += 0.05;
-
-  propellerAngle += 0.05;
-  let moveAmount = 5;
-  if (keyIsDown(LEFT_ARROW)) {
-    submarineX -= moveAmount;
-  }
-  if (keyIsDown(RIGHT_ARROW)) {
-    submarineX += moveAmount;
-  }
-  if (keyIsDown(UP_ARROW)) {
-    submarineY -= moveAmount;
-  }
-  if (keyIsDown(DOWN_ARROW)) {
-    submarineY += moveAmount;
-  }
+  return {
+    x: x,
+    y: y,
+    radius: 1,
+    growthRate: growthRate,
+    opacity: 255,
+    duration: 90,
+    update: function () {
+      if (this.duration > 0) {
+        this.radius += this.growthRate;
+        this.opacity -= 255 / this.duration;
+        this.duration--;
+      }
+    },
+    draw: function () {
+      if (this.duration > 0) {
+        fill(255, 50, 0, this.opacity);
+        noStroke();
+        ellipse(this.x, this.y, this.radius * 2);
+      }
+    },
+  };
 }
-*/
+
+function collidesWithMine(x, y) {
+  let submarineRadius = 50;
+
+  for (let mine of mines) {
+    let mineRadius = 1 * mine.scaleFactor;
+    let distance = dist(x, y, mine.x, mine.y);
+
+    if (distance < submarineRadius + mineRadius) {
+      return mine;
+    }
+  }
+  return null;
+}
+
+function explosion(x, y) {
+  let opacity = 255;
+  let radius = 0;
+  let growthRate = 1;
+  let duration = 120;
+
+  return {
+    x: x,
+    y: y,
+    radius: 1,
+    growthRate: growthRate,
+    opacity: 255,
+    duration: 90,
+    update: function () {
+      if (this.duration > 0) {
+        this.radius += this.growthRate;
+        this.opacity -= 255 / this.duration;
+        this.duration--;
+      }
+    },
+    draw: function () {
+      if (this.duration > 0) {
+        fill(255, 50, 0, this.opacity);
+        noStroke();
+        ellipse(this.x, this.y, this.radius * 2);
+      }
+    },
+  };
+}
+
+function collidesWithMine(x, y) {
+  let submarineRadius = 50;
+
+  for (let mine of mines) {
+    let mineRadius = 1 * mine.scaleFactor;
+    let distance = dist(x, y, mine.x, mine.y);
+
+    if (distance < submarineRadius + mineRadius) {
+      return mine;
+    }
+  }
+  return null;
+}
 
 function draw() {
   background(255);
   image(myImage, 0, 0, windowWidth, windowHeight); // background image
+  for (let i = explosions.length - 1; i >= 0; i--) {
+    let exp = explosions[i];
+    exp.update();
+    exp.draw();
 
-  //timer
-  textSize(32);
-  text("Time Left: " + timeLeft, 10, 30);
+    //timer
+    textSize(32);
+    text("Time Left: " + timeLeft, 10, 30);
 
-  if (frameCount % 60 == 0 && timeLeft > 0) timeLeft--;
+    if (frameCount % 60 == 0 && timeLeft > 0) timeLeft--;
 
+    if (exp.duration <= 0) {
+      explosions.splice(i, 1);
+    }
+  }
   // toxic barrels
   for (let barrel of barrels) {
     push();
@@ -411,8 +452,10 @@ function draw() {
   }
 
   // the submarine
-  drawSubmarine(submarineX, submarineY);
-  propellerAngle += 0.05;
+  if (submarineVisible) {
+    drawSubmarine(submarineX, submarineY);
+    propellerAngle += 0.05;
+  }
 
   // Moving the base down by 60 pixels
   push();
@@ -443,5 +486,19 @@ function draw() {
     submarineY += moveAmount;
     submarineAngle = -PI / 2;
     if (submarineY > windowHeight) submarineY = windowHeight;
+  }
+
+  // Checking for collision with mines
+  let collidingMine = collidesWithMine(submarineX, submarineY);
+  if (collidingMine) {
+    let newExplosion = explosion(collidingMine.x, collidingMine.y);
+    explosions.push(newExplosion);
+
+    // Removing the mine from the mines array
+    let mineIndex = mines.indexOf(collidingMine);
+    if (mineIndex > -1) {
+      mines.splice(mineIndex, 1);
+    }
+    submarineVisible = false;
   }
 }
