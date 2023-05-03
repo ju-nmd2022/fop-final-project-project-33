@@ -6,6 +6,10 @@ let propellerAngle = 0;
 let barrels = [];
 let mines = [];
 let occupiedPositions = [];
+let explosions = [];
+
+let submarineVisible = true;
+
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
@@ -310,11 +314,64 @@ function underwaterMine(x, y) {
   }
 }
 
+function explosion(x, y) {
+  let opacity = 255;
+  let radius = 0;
+  let growthRate = 1;
+  let duration = 120;
+
+  return {
+    x: x,
+    y: y,
+    radius: 1,
+    growthRate: growthRate,
+    opacity: 255,
+    duration: 90,
+    update: function () {
+      if (this.duration > 0) {
+        this.radius += this.growthRate;
+        this.opacity -= 255 / this.duration;
+        this.duration--;
+      }
+    },
+    draw: function () {
+      
+      if (this.duration > 0) {
+        fill(255, 50, 0, this.opacity);
+        noStroke();
+        ellipse(this.x, this.y, this.radius * 2);
+      }
+    },
+  };
+}
+
+function collidesWithMine(x, y) {
+  let submarineRadius = 50;
+
+  for (let mine of mines) {
+    let mineRadius = 1 * mine.scaleFactor;
+    let distance = dist(x, y, mine.x, mine.y);
+
+    if (distance < submarineRadius + mineRadius) {
+      return mine;
+    }
+  }
+  return null;
+}
+
 
 function draw() {
   background(255);
   image(myImage, 0, 0, windowWidth, windowHeight); // background image
+  for (let i = explosions.length - 1; i >= 0; i--) {
+    let exp = explosions[i];
+    exp.update();
+    exp.draw();
 
+    if (exp.duration <= 0) {
+      explosions.splice(i, 1);
+    }
+  }
   // toxic barrels
   for (let barrel of barrels) {
     push();
@@ -336,9 +393,12 @@ function draw() {
     pop();
   }
 
+  
   // the submarine
-  drawSubmarine(submarineX, submarineY);
-  propellerAngle += 0.05;
+  if (submarineVisible) {
+    drawSubmarine(submarineX, submarineY);
+    propellerAngle += 0.05;
+  }
 
   // Moving the base down by 60 pixels
   push();
@@ -346,6 +406,7 @@ function draw() {
   drawBase();
   pop();
 
+  
   let moveAmount = 5;
   if (keyIsDown(LEFT_ARROW)) {
     submarineX = constrain(submarineX - moveAmount, 0, width);
@@ -359,4 +420,18 @@ function draw() {
   if (keyIsDown(DOWN_ARROW)) {
     submarineY = constrain(submarineY + moveAmount, 0, height);
   }  
+
+    // Checking for collision with mines
+    let collidingMine = collidesWithMine(submarineX, submarineY);
+    if (collidingMine) {
+      let newExplosion = explosion(collidingMine.x, collidingMine.y);
+      explosions.push(newExplosion);
+  
+      // Removing the mine from the mines array
+      let mineIndex = mines.indexOf(collidingMine);
+      if (mineIndex > -1) {
+        mines.splice(mineIndex, 1);
+      }
+      submarineVisible = false;
+    }
 }
