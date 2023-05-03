@@ -211,7 +211,7 @@ function smallerUnderwaterMine(x, y) {
 function drawToxicBarrel(x, y, scaleFactor) {
   push();
   translate(x, y);
-  scale(scaleFactor * 0.8);
+  scale(scaleFactor );
   fill(255, 255, 0);
   stroke(0);
   strokeWeight(2);
@@ -309,63 +309,6 @@ function underwaterMine(x, y) {
   }
 }
 
-/*
-
-function draw() {
-  background(255);
-  image(myImage,0, 0, windowWidth, windowHeight); // Draw the background image first
-  drawToxicBarrel(100, 300);
-  smallerUnderwaterMine(300, 200);
-  let mineX = width / 2 + 20 * sin(frameCount * 0.02); // Calculate mine's x position with a slight horizontal movement
-  underwaterMine(mineX, height / 2);
-
-  /Draw the body of the submarine
-  noStroke();
-  fill(100, 150, 200);
-  beginShape();
-  vertex(100, 200);
-  bezierVertex(120, 100, 280, 140, 380, 200);
-  bezierVertex(300, 260, 120, 300, 100, 200);
-  endShape(CLOSE);
-  //Draw the windows of the submarine
-  push();
-  fill(33);
-  ellipse(145, 200, 25);
-  ellipse(195, 200, 25);
-  ellipse(245, 200, 25);
-  ellipse(295, 200, 25);
-  pop();
-  stroke(33);
-  strokeWeight(10);
-  line(100, 200, 60, 200);
-
-  // Draw the magnet
-  fill(200, 0, 0);
-  ellipse(40, 200, 30);
-  //rect(x,y,w,[h],[topleft],[topright],[bottomright],[bottomleft])
-  fill(33);
-  rect(165, 95, 65, 50, 20, 59, 0);
-
-
-  drawSubmarine(submarineX, submarineY);
-  propellerAngle += 0.05;
-
-  propellerAngle += 0.05;
-  let moveAmount = 5;
-  if (keyIsDown(LEFT_ARROW)) {
-    submarineX -= moveAmount;
-  }
-  if (keyIsDown(RIGHT_ARROW)) {
-    submarineX += moveAmount;
-  }
-  if (keyIsDown(UP_ARROW)) {
-    submarineY -= moveAmount;
-  }
-  if (keyIsDown(DOWN_ARROW)) {
-    submarineY += moveAmount;
-  }
-}
-*/
 
 function draw() {
   background(255);
@@ -404,15 +347,15 @@ function draw() {
 
   let moveAmount = 5;
   if (keyIsDown(LEFT_ARROW)) {
-    submarineX -= moveAmount;
+    submarineX = constrain(submarineX - moveAmount, 0, width);
   }
   if (keyIsDown(RIGHT_ARROW)) {
-    submarineX += moveAmount;
+    submarineX = constrain(submarineX + moveAmount, 0, width);
   }
   if (keyIsDown(UP_ARROW)) {
-    submarineY -= moveAmount;
+    submarineY = constrain(submarineY - moveAmount, 0, height);
   }
   if (keyIsDown(DOWN_ARROW)) {
-    submarineY += moveAmount;
-  }
+    submarineY = constrain(submarineY + moveAmount, 0, height);
+  }  
 }
