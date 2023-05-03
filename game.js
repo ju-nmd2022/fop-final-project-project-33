@@ -32,9 +32,9 @@ function setup() {
   for (let i = 0; i < 20; i++) {
     let x, y, scaleFactor;
     do {
-      x = random(width);
-      y = random(height);
       scaleFactor = random(0.5, 1.0);
+      x = random(45 * scaleFactor, width - 45 * scaleFactor); // Update this line
+      y = random(45 * scaleFactor, height - 45 * scaleFactor); // Update this line
     } while (checkOverlap(x, y, 100 * scaleFactor));
     barrels.push({ x: x, y: y, scaleFactor: scaleFactor });
     occupiedPositions.push({ x: x, y: y });
@@ -44,15 +44,16 @@ function setup() {
   for (let i = 0; i < 10; i++) {
     let x, y, scaleFactor, offsetX;
     do {
-      x = random(width);
-      y = random(height);
       scaleFactor = random(0.5, 1.0);
+      x = random(50 * scaleFactor, width - 50 * scaleFactor); // Update this line
+      y = random(50 * scaleFactor, height - 50 * scaleFactor); // Update this line
     } while (checkOverlap(x, y, 100 * scaleFactor));
     offsetX = random(TWO_PI); // Add this line to assign a random offset value
     mines.push({ x: x, y: y, scaleFactor: scaleFactor, offsetX: offsetX }); // Update this line to include offsetX
     occupiedPositions.push({ x: x, y: y });
   }
 }
+
 
 function drawBase() {
   push();
@@ -220,7 +221,7 @@ function drawToxicBarrel(x, y, scaleFactor) {
   let barrelWidth = 60;
   let barrelHeight = 90;
   let curveAmount = 18;
-
+  
   beginShape();
   vertex(x - barrelWidth / 2, y - barrelHeight / 2 + curveAmount);
   bezierVertex(
