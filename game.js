@@ -415,16 +415,16 @@ function collidesWithMine(x, y) {
 function draw() {
   background(255);
   image(myImage, 0, 0, windowWidth, windowHeight); // background image
+  //timer
+  push();
+  textSize(32);
+  text("Time Left: " + timeLeft, 10, 30);
+  if (frameCount % 60 == 0 && timeLeft > 0) timeLeft--;
+  pop();
   for (let i = explosions.length - 1; i >= 0; i--) {
     let exp = explosions[i];
     exp.update();
     exp.draw();
-
-    //timer
-    textSize(32);
-    text("Time Left: " + timeLeft, 10, 30);
-
-    if (frameCount % 60 == 0 && timeLeft > 0) timeLeft--;
 
     if (exp.duration <= 0) {
       explosions.splice(i, 1);
