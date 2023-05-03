@@ -1,7 +1,18 @@
+// Game State constants for the switch statement
+const STATE_START = 0;
+const STATE_PLAYING = 1;
+const STATE_GAME_OVER = 2;
+
+//Submarine variables
 let submarineX = 240;
 let submarineY = 200;
+let submarineSize = 100;
+let submarineAngle = 0;
 
 let propellerAngle = 0;
+
+//Variable for timer
+let timeLeft = 60;
 
 let barrels = [];
 let mines = [];
@@ -103,6 +114,7 @@ function drawSubmarine(x, y) {
   push();
   translate(x, y);
   scale(0.3);
+  rotate(submarineAngle);
 
   // the main body of the submarine
   noStroke();
@@ -211,7 +223,7 @@ function smallerUnderwaterMine(x, y) {
 function drawToxicBarrel(x, y, scaleFactor) {
   push();
   translate(x, y);
-  scale(scaleFactor );
+  scale(scaleFactor * 0.8);
   fill(255, 255, 0);
   stroke(0);
   strokeWeight(2);
@@ -309,10 +321,73 @@ function underwaterMine(x, y) {
   }
 }
 
+/*
+
+function draw() {
+  background(255);
+  image(myImage,0, 0, windowWidth, windowHeight); // Draw the background image first
+  drawToxicBarrel(100, 300);
+  smallerUnderwaterMine(300, 200);
+  let mineX = width / 2 + 20 * sin(frameCount * 0.02); // Calculate mine's x position with a slight horizontal movement
+  underwaterMine(mineX, height / 2);
+
+  /Draw the body of the submarine
+  noStroke();
+  fill(100, 150, 200);
+  beginShape();
+  vertex(100, 200);
+  bezierVertex(120, 100, 280, 140, 380, 200);
+  bezierVertex(300, 260, 120, 300, 100, 200);
+  endShape(CLOSE);
+  //Draw the windows of the submarine
+  push();
+  fill(33);
+  ellipse(145, 200, 25);
+  ellipse(195, 200, 25);
+  ellipse(245, 200, 25);
+  ellipse(295, 200, 25);
+  pop();
+  stroke(33);
+  strokeWeight(10);
+  line(100, 200, 60, 200);
+
+  // Draw the magnet
+  fill(200, 0, 0);
+  ellipse(40, 200, 30);
+  //rect(x,y,w,[h],[topleft],[topright],[bottomright],[bottomleft])
+  fill(33);
+  rect(165, 95, 65, 50, 20, 59, 0);
+
+
+  drawSubmarine(submarineX, submarineY);
+  propellerAngle += 0.05;
+
+  propellerAngle += 0.05;
+  let moveAmount = 5;
+  if (keyIsDown(LEFT_ARROW)) {
+    submarineX -= moveAmount;
+  }
+  if (keyIsDown(RIGHT_ARROW)) {
+    submarineX += moveAmount;
+  }
+  if (keyIsDown(UP_ARROW)) {
+    submarineY -= moveAmount;
+  }
+  if (keyIsDown(DOWN_ARROW)) {
+    submarineY += moveAmount;
+  }
+}
+*/
 
 function draw() {
   background(255);
   image(myImage, 0, 0, windowWidth, windowHeight); // background image
+
+  //timer
+  textSize(32);
+  text("Time Left: " + timeLeft, 10, 30);
+
+  if (frameCount % 60 == 0 && timeLeft > 0) timeLeft--;
 
   // toxic barrels
   for (let barrel of barrels) {
@@ -346,16 +421,27 @@ function draw() {
   pop();
 
   let moveAmount = 5;
+
   if (keyIsDown(LEFT_ARROW)) {
-    submarineX = constrain(submarineX - moveAmount, 0, width);
+    submarineX -= moveAmount;
+    submarineAngle = 0;
+    if (submarineX < 0) {
+      submarineX = 0;
+    }
   }
   if (keyIsDown(RIGHT_ARROW)) {
-    submarineX = constrain(submarineX + moveAmount, 0, width);
+    submarineX += moveAmount;
+    submarineAngle = PI;
+    if (submarineX > windowWidth) submarineX = windowWidth;
   }
   if (keyIsDown(UP_ARROW)) {
-    submarineY = constrain(submarineY - moveAmount, 0, height);
+    submarineY -= moveAmount;
+    submarineAngle = PI / 2;
+    if (submarineY < 0) submarineY = 0;
   }
   if (keyIsDown(DOWN_ARROW)) {
-    submarineY = constrain(submarineY + moveAmount, 0, height);
-  }  
+    submarineY += moveAmount;
+    submarineAngle = -PI / 2;
+    if (submarineY > windowHeight) submarineY = windowHeight;
+  }
 }
