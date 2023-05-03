@@ -328,30 +328,31 @@ function explosion(x, y) {
   let opacity = 255;
   let radius = 0;
   let growthRate = 1;
+  let maxGrowth;
   let duration = 120;
 
-  return {
-    x: x,
-    y: y,
-    radius: 1,
-    growthRate: growthRate,
-    opacity: 255,
-    duration: 90,
-    update: function () {
-      if (this.duration > 0) {
-        this.radius += this.growthRate;
-        this.opacity -= 255 / this.duration;
-        this.duration--;
-      }
-    },
-    draw: function () {
-      if (this.duration > 0) {
-        fill(255, 50, 0, this.opacity);
-        noStroke();
-        ellipse(this.x, this.y, this.radius * 2);
-      }
-    },
-  };
+  // return {
+  //   x: x,
+  //   y: y,
+  //   radius: 1,
+  //   growthRate: growthRate,
+  //   opacity: 255,
+  //   duration: 90,
+  //   update: function () {
+  //     if (this.duration > 0) {
+  //       this.radius += this.growthRate;
+  //       this.opacity -= 255 / this.duration;
+  //       this.duration--;
+  //     }
+  //   },
+  //   draw: function () {
+  //     if (this.duration > 0) {
+  //       fill(255, 50, 0, this.opacity);
+  //       noStroke();
+  //       ellipse(this.x, this.y, this.radius * 2);
+  //     }
+  //   },
+  // };
 }
 
 function collidesWithMine(x, y) {
@@ -366,36 +367,6 @@ function collidesWithMine(x, y) {
     }
   }
   return null;
-}
-
-function explosion(x, y) {
-  let opacity = 255;
-  let radius = 0;
-  let growthRate = 1;
-  let duration = 120;
-
-  return {
-    x: x,
-    y: y,
-    radius: 1,
-    growthRate: growthRate,
-    opacity: 255,
-    duration: 90,
-    update: function () {
-      if (this.duration > 0) {
-        this.radius += this.growthRate;
-        this.opacity -= 255 / this.duration;
-        this.duration--;
-      }
-    },
-    draw: function () {
-      if (this.duration > 0) {
-        fill(255, 50, 0, this.opacity);
-        noStroke();
-        ellipse(this.x, this.y, this.radius * 2);
-      }
-    },
-  };
 }
 
 function collidesWithMine(x, y) {
@@ -415,12 +386,17 @@ function collidesWithMine(x, y) {
 function draw() {
   background(255);
   image(myImage, 0, 0, windowWidth, windowHeight); // background image
+
   //timer
   push();
   textSize(32);
-  text("Time Left: " + timeLeft, 10, 30);
-  if (frameCount % 60 == 0 && timeLeft > 0) timeLeft--;
+
+  if (timeLeft > 0) {
+    text("Time Left: " + timeLeft, 10, 30);
+    if (frameCount % 60 == 0 && timeLeft > 0) timeLeft--;
+  }
   pop();
+
   for (let i = explosions.length - 1; i >= 0; i--) {
     let exp = explosions[i];
     exp.update();
@@ -430,6 +406,7 @@ function draw() {
       explosions.splice(i, 1);
     }
   }
+
   // toxic barrels
   for (let barrel of barrels) {
     push();
@@ -488,17 +465,17 @@ function draw() {
     if (submarineY > windowHeight) submarineY = windowHeight;
   }
 
-  // Checking for collision with mines
-  let collidingMine = collidesWithMine(submarineX, submarineY);
-  if (collidingMine) {
-    let newExplosion = explosion(collidingMine.x, collidingMine.y);
-    explosions.push(newExplosion);
+  // // Checking for collision with mines
+  // let collidingMine = collidesWithMine(submarineX, submarineY);
+  // if (collidingMine) {
+  //   let newExplosion = explosion(collidingMine.x, collidingMine.y);
+  //   explosions.push(newExplosion);
 
-    // Removing the mine from the mines array
-    let mineIndex = mines.indexOf(collidingMine);
-    if (mineIndex > -1) {
-      mines.splice(mineIndex, 1);
-    }
-    submarineVisible = false;
-  }
+  // Removing the mine from the mines array
+  //   let mineIndex = mines.indexOf(collidingMine);
+  //   if (mineIndex > -1) {
+  //     mines.splice(mineIndex, 1);
+  //   }
+  //   submarineVisible = false;
+  // }
 }
