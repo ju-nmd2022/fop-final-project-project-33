@@ -1,3 +1,4 @@
+
 // Game State constants for the switch statement
 const STATE_START = 0;
 const STATE_PLAYING = 1;
@@ -188,8 +189,8 @@ function keyPressed() {
   }
 }
 
-function smallerUnderwaterMine(x, y) {
-  let scaleFactor = 0.4; // 40% smaller
+function UnderwaterMine(x, y) {
+  let scaleFactor = 0.4; 
 
   fill(128, 128, 128);
   stroke(0);
@@ -290,46 +291,6 @@ function drawToxicBarrel(x, y, scaleFactor) {
   pop();
 }
 
-function underwaterMine(x, y) {
-  fill(128, 128, 128);
-  stroke(0);
-  strokeWeight(2);
-
-  // Increased amplitude for more movement
-  let yOffset = 50 * sin(frameCount * 0.05);
-
-  // the main body of the mine
-  ellipse(x, y + yOffset, 100, 100);
-  fill(0);
-  ellipse(x, y + yOffset, 10, 10);
-
-  // the spikes
-  let numSpikes = 12;
-  let spikeLength = 15;
-  strokeWeight(8);
-  for (let i = 0; i < numSpikes; i++) {
-    let angle = (TWO_PI / numSpikes) * i;
-    let startX = x + cos(angle) * 50;
-    let startY = y + sin(angle) * 50 + yOffset;
-    let endX = x + cos(angle) * (50 + spikeLength);
-    let endY = y + sin(angle) * (50 + spikeLength) + yOffset;
-
-    line(startX, startY, endX, endY);
-  }
-
-  // the chain
-  strokeWeight(2);
-  noFill();
-  let chainLength = 100;
-  let numLinks = 7;
-  let linkSize = 15;
-  let swayAmount = 3;
-  for (let i = 0; i < numLinks; i++) {
-    let linkY = y + 50 + (chainLength / numLinks) * i + yOffset;
-    let swayX = x + swayAmount * sin(frameCount * 0.05 + i); // Calculate sway based on frameCount and link index
-    ellipse(swayX, linkY, linkSize, linkSize);
-  }
-}
 
 function draw() {
   background(255);
@@ -362,7 +323,7 @@ function draw() {
     scale(mine.scaleFactor);
     let mineX =
       mine.x / mine.scaleFactor + 20 * sin(frameCount * 0.02 + mine.offsetX);
-    smallerUnderwaterMine(mineX, mine.y / mine.scaleFactor);
+    UnderwaterMine(mineX, mine.y / mine.scaleFactor);
     pop();
   }
 
@@ -402,4 +363,7 @@ function draw() {
     submarineAngle = -PI / 2;
     if (submarineY > windowHeight) submarineY = windowHeight;
   }
+
 }
+
+
