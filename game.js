@@ -40,14 +40,14 @@ function checkOverlap(x, y, minDist) {
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-
+  //The following 18 lines were adapted from ChatGPT
   // Creating max 20 random toxic barrels
   for (let i = 0; i < 20; i++) {
     let x, y, scaleFactor;
     do {
-      scaleFactor = random(0.5, 1.0);
-      x = random(45 * scaleFactor, width - 45 * scaleFactor); // Update this line
-      y = random(45 * scaleFactor, height - 45 * scaleFactor); // Update this line
+      scaleFactor = random(0.5, 0.7);
+      x = random(45 * scaleFactor, width - 45 * scaleFactor);
+      y = random(45 * scaleFactor, height - 45 * scaleFactor);
     } while (checkOverlap(x, y, 100 * scaleFactor));
     barrels.push({ x: x, y: y, scaleFactor: scaleFactor });
     occupiedPositions.push({ x: x, y: y });
@@ -57,12 +57,12 @@ function setup() {
   for (let i = 0; i < 10; i++) {
     let x, y, scaleFactor, offsetX;
     do {
-      scaleFactor = random(0.5, 1.0);
-      x = random(50 * scaleFactor, width - 50 * scaleFactor); // Update this line
-      y = random(50 * scaleFactor, height - 50 * scaleFactor); // Update this line
+      scaleFactor = random(0.9, 1.3);
+      x = random(50 * scaleFactor, width - 50 * scaleFactor);
+      y = random(50 * scaleFactor, height - 50 * scaleFactor);
     } while (checkOverlap(x, y, 100 * scaleFactor));
-    offsetX = random(TWO_PI); // Add this line to assign a random offset value
-    mines.push({ x: x, y: y, scaleFactor: scaleFactor, offsetX: offsetX }); // Update this line to include offsetX
+    offsetX = random(TWO_PI);
+    mines.push({ x: x, y: y, scaleFactor: scaleFactor, offsetX: offsetX });
     occupiedPositions.push({ x: x, y: y });
   }
 }
@@ -100,9 +100,11 @@ function drawBase() {
   vertex(0, 50);
   endShape(CLOSE);
 
-  // Opening at the top
-  fill(255); // White color for the opening
-  rect(40, 0, 70, 30);
+  // Opening at the right 
+  noFill();
+  stroke(0); 
+  strokeWeight(2);
+  rect(120, 60, 30, 80);
 
   // Base label
   fill(255);
@@ -141,13 +143,16 @@ function drawSubmarine(x, y) {
   // the handle
   stroke(33);
   strokeWeight(10);
-  line(0, 0, -40, 0);
+  line(0, 0, -50, 0);
 
   // the magnet
+  push();
+  scale(1.5);
   fill(200, 0, 0);
   ellipse(-60, 0, 40);
   fill(255);
   arc(-60, 0, 40, 40, PI, TWO_PI);
+  pop();
 
   // the multi-blade propeller
   stroke(33);
@@ -231,9 +236,9 @@ function drawToxicBarrel(x, y, scaleFactor) {
   strokeWeight(2);
 
   // the rounded barrel
-  let barrelWidth = 60;
-  let barrelHeight = 90;
-  let curveAmount = 18;
+  let barrelWidth = 50;
+  let barrelHeight = 85;
+  let curveAmount = 17;
 
   beginShape();
   vertex(x - barrelWidth / 2, y - barrelHeight / 2 + curveAmount);
@@ -290,10 +295,13 @@ function underwaterMine(x, y) {
   stroke(0);
   strokeWeight(2);
 
+  // Increased amplitude for more movement
+  let yOffset = 50 * sin(frameCount * 0.05);
+
   // the main body of the mine
-  ellipse(x, y, 100, 100);
+  ellipse(x, y + yOffset, 100, 100);
   fill(0);
-  ellipse(x, y, 10, 10);
+  ellipse(x, y + yOffset, 10, 10);
 
   // the spikes
   let numSpikes = 12;
@@ -302,9 +310,9 @@ function underwaterMine(x, y) {
   for (let i = 0; i < numSpikes; i++) {
     let angle = (TWO_PI / numSpikes) * i;
     let startX = x + cos(angle) * 50;
-    let startY = y + sin(angle) * 50;
+    let startY = y + sin(angle) * 50 + yOffset;
     let endX = x + cos(angle) * (50 + spikeLength);
-    let endY = y + sin(angle) * (50 + spikeLength);
+    let endY = y + sin(angle) * (50 + spikeLength) + yOffset;
 
     line(startX, startY, endX, endY);
   }
@@ -317,42 +325,10 @@ function underwaterMine(x, y) {
   let linkSize = 15;
   let swayAmount = 3;
   for (let i = 0; i < numLinks; i++) {
-    let linkY = y + 50 + (chainLength / numLinks) * i;
+    let linkY = y + 50 + (chainLength / numLinks) * i + yOffset;
     let swayX = x + swayAmount * sin(frameCount * 0.05 + i); // Calculate sway based on frameCount and link index
     ellipse(swayX, linkY, linkSize, linkSize);
   }
-}
-
-function explosion(x, y) {
-
-}
-
-function collidesWithMine(x, y) {
-  let submarineRadius = 50;
-
-  for (let mine of mines) {
-    let mineRadius = 1 * mine.scaleFactor;
-    let distance = dist(x, y, mine.x, mine.y);
-
-    if (distance < submarineRadius + mineRadius) {
-      return mine;
-    }
-  }
-  return null;
-}
-
-function collidesWithMine(x, y) {
-  let submarineRadius = 50;
-
-  for (let mine of mines) {
-    let mineRadius = 1 * mine.scaleFactor;
-    let distance = dist(x, y, mine.x, mine.y);
-
-    if (distance < submarineRadius + mineRadius) {
-      return mine;
-    }
-  }
-  return null;
 }
 
 function draw() {
@@ -369,7 +345,6 @@ function draw() {
   pop();
   //end timer
 
-  
   // toxic barrels
   for (let barrel of barrels) {
     push();
