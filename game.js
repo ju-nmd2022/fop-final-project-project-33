@@ -21,8 +21,38 @@ let occupiedPositions = [];
 
 let submarineVisible = true;
 
+// Explosion variables
+let explosionSize = 0;
+let explosionAlpha = 255;
+let startExplosion = false;
+let explosionTriggered = false;
+let explosionX, explosionY;
+let gameOver = false;
+
+
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
+}
+
+function explosion(x, y, start) {
+  if (start) {
+    startExplosion = true;
+  }
+
+  if (startExplosion && explosionAlpha > 0) {
+    push();
+    fill(255, 0, 0, explosionAlpha);
+    noStroke();
+    ellipse(x, y, explosionSize, explosionSize);
+    pop();
+    
+    explosionSize += 1;
+    explosionAlpha -= 2;
+  } else if (explosionAlpha <= 0) {
+    startExplosion = false;
+    explosionSize = 0;
+    explosionAlpha = 255;
+  }
 }
 
 function preload() {
@@ -291,6 +321,16 @@ function drawToxicBarrel(x, y, scaleFactor) {
   pop();
 }
 
+function checkCollision() {
+  for (let mine of mines) {
+    let d = dist(submarineX, submarineY, mine.x, mine.y);
+    if (d < 20 + submarineSize / 2) {
+      return true;
+    }
+  }
+  return false;
+  
+}
 
 function draw() {
   background(255);
@@ -364,6 +404,21 @@ function draw() {
     if (submarineY > windowHeight) submarineY = windowHeight;
   }
 
+  if (checkCollision() && !explosionTriggered) {
+    explosionX = submarineX;
+    explosionY = submarineY;
+    explosionTriggered = true;
+    submarineVisible = false;
+    gameOver = true;
+  }
+
+  // explosion
+  if (explosionTriggered) {
+    explosion(explosionX, explosionY, true);
+    textSize(62);
+    fill(0);
+    text('Game Over', width / 2 - 100, height / 2);
+  } else {
+    explosion(0, 0, false);
+  }
 }
-
-
