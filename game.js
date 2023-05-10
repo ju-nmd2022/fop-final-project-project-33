@@ -88,7 +88,7 @@ function setup() {
   for (let i = 0; i < 10; i++) {
     let x, y, scaleFactor, offsetX;
     do {
-      scaleFactor = random(0.9, 1.3);
+      scaleFactor = random(0.5, 0.9);
       x = random(50 * scaleFactor, width - 50 * scaleFactor);
       y = random(50 * scaleFactor, height - 50 * scaleFactor);
     } while (checkOverlap(x, y, 100 * scaleFactor));
@@ -131,9 +131,9 @@ function drawBase() {
   vertex(0, 50);
   endShape(CLOSE);
 
-  // Opening at the right 
+  // Opening at the right
   noFill();
-  stroke(0); 
+  stroke(0);
   strokeWeight(2);
   rect(120, 60, 30, 80);
 
