@@ -1,4 +1,3 @@
-
 // Game State constants for the switch statement
 const STATE_START = 0;
 const STATE_PLAYING = 1;
@@ -29,7 +28,6 @@ let explosionTriggered = false;
 let explosionX, explosionY;
 let gameOver = false;
 
-
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
@@ -45,13 +43,14 @@ function explosion(x, y, start) {
     noStroke();
     ellipse(x, y, explosionSize, explosionSize);
     pop();
-    
+
     explosionSize += 1;
     explosionAlpha -= 2;
-  } else if (explosionAlpha <= 0) {
+  } else if (explosionAlpha === 0) {
     startExplosion = false;
+    start = false;
     explosionSize = 0;
-    explosionAlpha = 255;
+    explosionAlpha = 0;
   }
 }
 
@@ -77,9 +76,9 @@ function setup() {
     let x, y, scaleFactor;
     do {
       scaleFactor = random(0.5, 0.7);
-      x = random(45 * scaleFactor, width - 45 * scaleFactor);
-      y = random(45 * scaleFactor, height - 45 * scaleFactor);
-    } while (checkOverlap(x, y, 100 * scaleFactor));
+      x = Math.floor(random(45 * scaleFactor, width - 45 * scaleFactor));
+      y = Math.floor(random(45 * scaleFactor, height - 45 * scaleFactor));
+    } while (checkOverlap(x, y, 100 * scaleFactor) && x > 300 && y > 300);
     barrels.push({ x: x, y: y, scaleFactor: scaleFactor });
     occupiedPositions.push({ x: x, y: y });
   }
@@ -89,8 +88,8 @@ function setup() {
     let x, y, scaleFactor, offsetX;
     do {
       scaleFactor = random(0.5, 0.9);
-      x = random(50 * scaleFactor, width - 50 * scaleFactor);
-      y = random(50 * scaleFactor, height - 50 * scaleFactor);
+      x = Math.floor(random(50 * scaleFactor, width - 50 * scaleFactor));
+      y = Math.floor(random(50 * scaleFactor, height - 50 * scaleFactor));
     } while (checkOverlap(x, y, 100 * scaleFactor));
     offsetX = random(TWO_PI);
     mines.push({ x: x, y: y, scaleFactor: scaleFactor, offsetX: offsetX });
@@ -220,7 +219,7 @@ function keyPressed() {
 }
 
 function UnderwaterMine(x, y) {
-  let scaleFactor = 0.4; 
+  let scaleFactor = 0.4;
 
   fill(128, 128, 128);
   stroke(0);
@@ -324,12 +323,11 @@ function drawToxicBarrel(x, y, scaleFactor) {
 function checkCollision() {
   for (let mine of mines) {
     let d = dist(submarineX, submarineY, mine.x, mine.y);
-    if (d < 20 + submarineSize / 2) {
+    if (d < 10 + submarineSize / 2) {
       return true;
     }
   }
   return false;
-  
 }
 
 function draw() {
@@ -350,10 +348,9 @@ function draw() {
   for (let barrel of barrels) {
     push();
     scale(barrel.scaleFactor);
-    drawToxicBarrel(
-      barrel.x / barrel.scaleFactor,
-      barrel.y / barrel.scaleFactor
-    );
+    let barrelX = barrel.x / barrel.scaleFactor;
+    let barrelY = barrel.y / barrel.scaleFactor;
+    drawToxicBarrel(barrelX, barrelY);
     pop();
   }
 
@@ -363,7 +360,8 @@ function draw() {
     scale(mine.scaleFactor);
     let mineX =
       mine.x / mine.scaleFactor + 20 * sin(frameCount * 0.02 + mine.offsetX);
-    UnderwaterMine(mineX, mine.y / mine.scaleFactor);
+    mineY = mine.y / mine.scaleFactor;
+    UnderwaterMine(mineX, mineY);
     pop();
   }
 
@@ -417,7 +415,7 @@ function draw() {
     explosion(explosionX, explosionY, true);
     textSize(62);
     fill(0);
-    text('Game Over', width / 2 - 100, height / 2);
+    text("Game Over", width / 2 - 100, height / 2);
   } else {
     explosion(0, 0, false);
   }
