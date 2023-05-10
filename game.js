@@ -324,7 +324,7 @@ function drawToxicBarrel(x, y, scaleFactor) {
 function checkCollision() {
   for (let mine of mines) {
     let d = dist(submarineX, submarineY, mine.x, mine.y);
-    if (d < 20 + submarineSize / 2) {
+    if (d < 10 + submarineSize / 2) {
       return true;
     }
   }
