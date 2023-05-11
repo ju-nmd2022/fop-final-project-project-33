@@ -309,8 +309,9 @@ function drawToxicBarrel(x, y, scaleFactor) {
 
   // the rounded top
   fill(255, 255, 0);
-  arc(x, y - 59 * 0.6, barrelWidth, curveAmount, PI, 3, OPEN); // Reduced y-coordinate
-  arc(x, y + 59 * 0.6, barrelWidth, curveAmount, PI, 3, OPEN); // Reduced y-coordinate
+  arc(x, y - 59 * 0.6, barrelWidth, curveAmount, PI, 3, OPEN);
+  arc(x, y + 59 * 0.6, barrelWidth, curveAmount, PI, 3, OPEN);
+
 
   // the toxic symbol
   fill(0);
@@ -354,8 +355,12 @@ function draw() {
     pop();
   }
 
-  // underwater mines
-  for (let mine of mines) {
+// underwater mines
+for (let mine of mines) {
+  let mineX = mine.x / mine.scaleFactor + 20 * sin(frameCount * 0.02 + mine.offsetX);
+  let mineY = mine.y / mine.scaleFactor;
+  
+  if (mineX > 300 && mineY > 300) {
     push();
     scale(mine.scaleFactor);
     let mineX =
