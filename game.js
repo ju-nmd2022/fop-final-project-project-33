@@ -312,7 +312,6 @@ function drawToxicBarrel(x, y, scaleFactor) {
   arc(x, y - 59 * 0.6, barrelWidth, curveAmount, PI, 3, OPEN);
   arc(x, y + 59 * 0.6, barrelWidth, curveAmount, PI, 3, OPEN);
 
-
   // the toxic symbol
   fill(0);
   textAlign(CENTER, CENTER);
@@ -335,6 +334,7 @@ function draw() {
   background(255);
   image(myImage, 0, 0, windowWidth, windowHeight); // background image
 
+  frameRate(30);
   //timer
   push();
   textSize(32);
@@ -355,73 +355,75 @@ function draw() {
     pop();
   }
 
-// underwater mines
-for (let mine of mines) {
-  let mineX = mine.x / mine.scaleFactor + 20 * sin(frameCount * 0.02 + mine.offsetX);
-  let mineY = mine.y / mine.scaleFactor;
-  
-  if (mineX > 300 && mineY > 300) {
-    push();
-    scale(mine.scaleFactor);
+  // underwater mines
+  for (let mine of mines) {
     let mineX =
       mine.x / mine.scaleFactor + 20 * sin(frameCount * 0.02 + mine.offsetX);
-    mineY = mine.y / mine.scaleFactor;
-    UnderwaterMine(mineX, mineY);
-    pop();
-  }
+    let mineY = mine.y / mine.scaleFactor;
 
-  // the submarine
-  if (submarineVisible) {
-    drawSubmarine(submarineX, submarineY);
-    propellerAngle += 0.05;
-  }
-
-  // Moving the base down by 60 pixels
-  push();
-  translate(0, 60);
-  drawBase();
-  pop();
-
-  let moveAmount = 5;
-
-  if (keyIsDown(LEFT_ARROW)) {
-    submarineX -= moveAmount;
-    submarineAngle = 0;
-    if (submarineX < 0) {
-      submarineX = 0;
+    if (mineX > 300 && mineY > 300) {
+      push();
+      scale(mine.scaleFactor);
+      // let mineX =
+      //   mine.x / mine.scaleFactor + 20 * sin(frameCount * 0.02 + mine.offsetX);
+      // mineY = mine.y / mine.scaleFactor;
+      UnderwaterMine(mineX, mineY);
+      pop();
     }
-  }
-  if (keyIsDown(RIGHT_ARROW)) {
-    submarineX += moveAmount;
-    submarineAngle = PI;
-    if (submarineX > windowWidth) submarineX = windowWidth;
-  }
-  if (keyIsDown(UP_ARROW)) {
-    submarineY -= moveAmount;
-    submarineAngle = PI / 2;
-    if (submarineY < 0) submarineY = 0;
-  }
-  if (keyIsDown(DOWN_ARROW)) {
-    submarineY += moveAmount;
-    submarineAngle = -PI / 2;
-    if (submarineY > windowHeight) submarineY = windowHeight;
-  }
 
-  if (checkCollision() && !explosionTriggered) {
-    explosionX = submarineX;
-    explosionY = submarineY;
-    explosionTriggered = true;
-    submarineVisible = false;
-    gameOver = true;
-  }
+    // the submarine
+    if (submarineVisible) {
+      drawSubmarine(submarineX, submarineY);
+      propellerAngle += 0.05;
+    }
 
-  // explosion
-  if (explosionTriggered) {
-    explosion(explosionX, explosionY, true);
-    textSize(62);
-    fill(0);
-    text("Game Over", width / 2 - 100, height / 2);
-  } else {
-    explosion(0, 0, false);
+    // Moving the base down by 60 pixels
+    push();
+    translate(0, 60);
+    drawBase();
+    pop();
+
+    let moveAmount = 5;
+
+    if (keyIsDown(LEFT_ARROW)) {
+      submarineX -= moveAmount;
+      submarineAngle = 0;
+      if (submarineX < 0) {
+        submarineX = 0;
+      }
+    }
+    if (keyIsDown(RIGHT_ARROW)) {
+      submarineX += moveAmount;
+      submarineAngle = PI;
+      if (submarineX > windowWidth) submarineX = windowWidth;
+    }
+    if (keyIsDown(UP_ARROW)) {
+      submarineY -= moveAmount;
+      submarineAngle = PI / 2;
+      if (submarineY < 0) submarineY = 0;
+    }
+    if (keyIsDown(DOWN_ARROW)) {
+      submarineY += moveAmount;
+      submarineAngle = -PI / 2;
+      if (submarineY > windowHeight) submarineY = windowHeight;
+    }
+
+    if (checkCollision() && !explosionTriggered) {
+      explosionX = submarineX;
+      explosionY = submarineY;
+      explosionTriggered = true;
+      submarineVisible = false;
+      gameOver = true;
+    }
+
+    // explosion
+    if (explosionTriggered) {
+      explosion(explosionX, explosionY, true);
+      textSize(62);
+      fill(0);
+      text("Game Over", width / 2 - 100, height / 2);
+    } else {
+      explosion(0, 0, false);
+    }
   }
 }
