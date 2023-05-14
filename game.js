@@ -382,7 +382,7 @@ for (let mine of mines) {
   drawBase();
   pop();
 
-  let moveAmount = 5;
+  let moveAmount = 1;
 
   if (keyIsDown(LEFT_ARROW)) {
     submarineX -= moveAmount;
@@ -424,4 +424,5 @@ for (let mine of mines) {
   } else {
     explosion(0, 0, false);
   }
+}
 }
