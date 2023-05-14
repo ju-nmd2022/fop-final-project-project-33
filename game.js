@@ -383,7 +383,7 @@ function draw() {
     drawBase();
     pop();
 
-    let moveAmount = 5;
+    let moveAmount = 1;
 
     if (keyIsDown(LEFT_ARROW)) {
       submarineX -= moveAmount;
