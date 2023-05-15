@@ -17,6 +17,7 @@ export default class SubmarineClass {
     // Move the object if arrow keys are pressed
     if (keyIsDown(LEFT_ARROW)) {
       this.x -= this.speed;
+      // scale(-1, 1);
     }
     if (keyIsDown(RIGHT_ARROW)) {
       this.x += this.speed;
