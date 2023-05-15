@@ -18,10 +18,17 @@ let backgroundImage;
 let attachedBarrel = null;
 let isAttached = false;
 
+let containerImage;
+
+let timer = 60;
+let score = 100;
+
+
 function preload() {
   backgroundImage = loadImage("/img/background2.png");
   submarineImage = loadImage("/img/submarine-graphic.png");
   toxicBarrelImg = loadImage("/img/toxic-barrel.png");
+  containerImage = loadImage("/img/container.png");
 }
 function setup() {
   let cnv = createCanvas(windowWidth, windowHeight);
@@ -51,8 +58,11 @@ function getRandomPosition() {
 }
 
 function checkExclusionZone(x, y) {
-  return x < 200 && y < 200;
+  let containerWidth = 400;
+  let containerHeight = 400;
+  return (x < 200 && y < 200) || (x < containerWidth && y < containerHeight);
 }
+
 
 function checkDistance(x, y) {
   for (let barrel of toxicBarrels) {
@@ -64,14 +74,45 @@ function checkDistance(x, y) {
   return false;
 }
 
+function collectionPointText(){
+  fill(0, 0, 139); 
+  noStroke(); 
+  rect(30, 75, 190, 30);
+  
+  textAlign(LEFT, TOP); 
+  textSize(25); 
+  fill(255); 
+  text('Collection point', 40, 80);
+}
+
+function displayTimerAndScore() {
+  textSize(30); 
+  fill(0, 255, 0); 
+
+  // Display the timer
+  text('Timer:', width - 200, 50);
+  text(timer + ' s', width - 70, 50);
+
+// Display the score
+  fill(0, 0, 255);
+  text('Score:', width - 200, 90);
+  text(score, width - 70, 90);
+}
+
+
 function draw() {
   background(255);
   image(backgroundImage, 0, 0, windowWidth, windowHeight);
   submarine.display();
   submarine.move();
+
   for (let barrel of toxicBarrels) {
     barrel.display();
   }
+  // if (frameCount % 60 == 0 && timer > 0) {
+  //   timer--;
+  // }
+
   for (let i = 0; i < toxicBarrels.length; i++) {
     if (!isAttached) {
       if (submarine.checkCollision(toxicBarrels[i])) {
@@ -99,6 +140,9 @@ function draw() {
   for (let barrel of toxicBarrels) {
     barrel.display();
   }
+  image(containerImage, -80, -140, 400, 400);
+  collectionPointText();
+  displayTimerAndScore();
 }
 
 class SubmarineClass {
@@ -169,4 +213,8 @@ class ToxicBarrel {
   display() {
     image(this.img, this.x, this.y, this.width, this.height);
   }
+}
+
+class UnderwaterMine{
+  constructor(){}
 }
