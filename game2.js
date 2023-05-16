@@ -17,39 +17,50 @@ let toxicBarrels = [];
 let backgroundImage;
 let attachedBarrel = null;
 let isAttached = false;
-
+let underwaterMineImg;
 let containerImage;
+let underwaterMines = [];
 
 let timer = 60;
 let score = 100;
-
 
 function preload() {
   backgroundImage = loadImage("/img/background2.png");
   submarineImage = loadImage("/img/submarine-graphic.png");
   toxicBarrelImg = loadImage("/img/toxic-barrel.png");
   containerImage = loadImage("/img/container.png");
+  underwaterMineImg = loadImage("/img/underwater-mine.png");
 }
 function setup() {
   let cnv = createCanvas(windowWidth, windowHeight);
   submarine = new SubmarineClass(width / 2, height / 2, 4, submarineImage);
   initToxicBarrels(10); // initialize 10 barrels
+  initUnderwaterMines(15);
 }
 
 function initToxicBarrels(count) {
   for (let i = 0; i < count; i++) {
-    let position = getRandomPosition();
+    let position = getRandomPosition(150);
     toxicBarrels.push(new ToxicBarrel(position.x, position.y, toxicBarrelImg));
   }
 }
 
-function getRandomPosition() {
+function initUnderwaterMines(count) {
+  for (let i = 0; i < count; i++) {
+    let position = getRandomPosition(100); // ensure at least 200px between each mine
+    underwaterMines.push(
+      new UnderwaterMine(position.x, position.y, underwaterMineImg)
+    );
+  }
+}
+
+function getRandomPosition(minDist) {
   let x, y;
-  if (toxicBarrels.length > 0) {
+  if (toxicBarrels.length > 0 || underwaterMines.length > 0) {
     do {
       x = random(width - 100);
       y = random(height - 100);
-    } while (checkDistance(x, y) || checkExclusionZone(x, y));
+    } while (checkDistance(x, y, minDist) || checkExclusionZone(x, y));
   } else {
     x = random(width - 100);
     y = random(height - 100);
@@ -63,42 +74,46 @@ function checkExclusionZone(x, y) {
   return (x < 200 && y < 200) || (x < containerWidth && y < containerHeight);
 }
 
-
-function checkDistance(x, y) {
+function checkDistance(x, y, minDist) {
   for (let barrel of toxicBarrels) {
     let d = dist(x, y, barrel.x, barrel.y);
-    if (d < 150) {
-      return true;
+    if (d < minDist) {
+      return true; // too close to a barrel
     }
   }
-  return false;
+  for (let mine of underwaterMines) {
+    let d = dist(x, y, mine.x, mine.y);
+    if (d < minDist) {
+      return true; // too close to a mine
+    }
+  }
+  return false; // not too close to any barrel or mine
 }
 
-function collectionPointText(){
-  fill(0, 0, 139); 
-  noStroke(); 
+function collectionPointText() {
+  fill(0, 0, 139);
+  noStroke();
   rect(30, 75, 190, 30);
-  
-  textAlign(LEFT, TOP); 
-  textSize(25); 
-  fill(255); 
-  text('Collection point', 40, 80);
+
+  textAlign(LEFT, TOP);
+  textSize(25);
+  fill(255);
+  text("Collection point", 40, 80);
 }
 
 function displayTimerAndScore() {
-  textSize(30); 
-  fill(0, 255, 0); 
+  textSize(30);
+  fill(0, 255, 0);
 
   // Display the timer
-  text('Timer:', width - 200, 50);
-  text(timer + ' s', width - 70, 50);
+  text("Timer:", width - 200, 50);
+  text(timer + " s", width - 70, 50);
 
-// Display the score
+  // Display the score
   fill(0, 0, 255);
-  text('Score:', width - 200, 90);
+  text("Score:", width - 200, 90);
   text(score, width - 70, 90);
 }
-
 
 function draw() {
   background(255);
@@ -109,6 +124,12 @@ function draw() {
   for (let barrel of toxicBarrels) {
     barrel.display();
   }
+
+  for (let mine of underwaterMines) {
+    mine.move();
+    mine.display();
+  }
+
   // if (frameCount % 60 == 0 && timer > 0) {
   //   timer--;
   // }
@@ -120,7 +141,7 @@ function draw() {
           // 32 is the keyCode for Spacebar, change it as per your needs
           attachedBarrel = toxicBarrels.splice(i, 1)[0]; // attach the barrel and remove it from the array
           isAttached = true;
-          break; 
+          break;
         }
       }
     }
@@ -174,8 +195,22 @@ class SubmarineClass {
     pop();
   }
   checkCollision(barrel) {
-    let d = dist(this.x, this.y, barrel.x, barrel.y);
-    return d < this.width + barrel.width / 2;
+    // Calculate the front of the submarine
+    //Using ternary operator to determine which way the submarine is facing
+    //So if this.mirror is true then submarineFront = this.x and if its false submarineFront = this.x+this.width
+    let submarineFront = this.mirror ? this.x : this.x + this.width;
+
+    // Check for collision on the x-axis
+    let collisionOnX =
+      submarineFront >= barrel.x && submarineFront <= barrel.x + barrel.width;
+
+    // Check for collision on the y-axis
+    let collisionOnY =
+      this.y + this.height - 3 >= barrel.y &&
+      this.y <= barrel.y + barrel.height - 50;
+
+    // Return true if collision on both axes, false otherwise
+    return collisionOnX && collisionOnY;
   }
   move() {
     // Move the object if arrow keys are pressed
@@ -215,6 +250,26 @@ class ToxicBarrel {
   }
 }
 
-class UnderwaterMine{
-  constructor(){}
+class UnderwaterMine {
+  constructor(x, y, img) {
+    this.x = x;
+    this.y = y;
+    this.size = 50;
+    this.width = 35; // desired width
+    this.height = img.height * (this.width / img.width);
+    this.img = img;
+    this.speed = 0.5; // speed of movement
+  }
+  display() {
+    image(this.img, this.x, this.y, this.width, this.height);
+  }
+
+  move() {
+    this.x += random(-this.speed, this.speed);
+    this.y += random(-this.speed, this.speed);
+
+    // Keep the mine within the canvas
+    this.x = constrain(this.x, 0, width - this.width);
+    this.y = constrain(this.y, 0, height - this.height);
+  }
 }
