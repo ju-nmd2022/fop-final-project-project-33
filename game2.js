@@ -93,12 +93,12 @@ function checkDistance(x, y, minDist) {
 function collectionPointText() {
   fill(0, 0, 139);
   noStroke();
-  rect(30, 75, 190, 30);
+  rect(20, 20, 190, 30);
 
   textAlign(LEFT, TOP);
   textSize(25);
   fill(255);
-  text("Collection point", 40, 80);
+  text("Collection point", 25, 20);
 }
 
 function displayTimerAndScore() {
@@ -137,7 +137,7 @@ function draw() {
   for (let i = 0; i < toxicBarrels.length; i++) {
     if (!isAttached) {
       if (submarine.checkCollision(toxicBarrels[i])) {
-        if (keyIsPressed === true && keyCode == "32") {
+        if (keyIsPressed === true && keyCode == 32) {
           // 32 is the keyCode for Spacebar, change it as per your needs
           attachedBarrel = toxicBarrels.splice(i, 1)[0]; // attach the barrel and remove it from the array
           isAttached = true;
@@ -158,10 +158,21 @@ function draw() {
     attachedBarrel.display();
   }
 
+  //removing the barrel when the submarine is inside the container
+  let nearContainer = dist(submarine.x, submarine.y, 75, -20) < 50; 
+
+  if (keyIsPressed === true && keyCode == 32 && isAttached && nearContainer) {
+    attachedBarrel.x = 0; 
+    attachedBarrel.y = 0;
+    toxicBarrels.push(attachedBarrel);
+    attachedBarrel = null;
+    isAttached = false;
+  }
+  
   for (let barrel of toxicBarrels) {
     barrel.display();
   }
-  image(containerImage, -80, -140, 400, 400);
+  image(containerImage, -80, -190, 400, 400);
   collectionPointText();
   displayTimerAndScore();
 }
@@ -255,10 +266,10 @@ class UnderwaterMine {
     this.x = x;
     this.y = y;
     this.size = 50;
-    this.width = 35; // desired width
+    this.width = 35; 
     this.height = img.height * (this.width / img.width);
     this.img = img;
-    this.speed = 0.5; // speed of movement
+    this.speed = 1; // decrease speed for slower movement
   }
   display() {
     image(this.img, this.x, this.y, this.width, this.height);
@@ -266,10 +277,11 @@ class UnderwaterMine {
 
   move() {
     this.x += random(-this.speed, this.speed);
-    this.y += random(-this.speed, this.speed);
+    // removed this.y random movement
 
     // Keep the mine within the canvas
     this.x = constrain(this.x, 0, width - this.width);
-    this.y = constrain(this.y, 0, height - this.height);
+    
   }
 }
+
