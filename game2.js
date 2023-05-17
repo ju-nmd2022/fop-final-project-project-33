@@ -26,7 +26,6 @@ let score = 100;
 
 let explosion = null;
 
-
 function preload() {
   backgroundImage = loadImage("/img/background2.png");
   submarineImage = loadImage("/img/submarine-graphic.png");
@@ -35,8 +34,9 @@ function preload() {
   underwaterMineImg = loadImage("/img/underwater-mine.png");
 }
 function setup() {
-  let cnv = createCanvas(windowWidth, windowHeight);
-  submarine = new SubmarineClass(150, 100, 6, submarineImage);
+  let cnv = createCanvas(window.innerWidth, window.innerHeight);
+  gameState = STATE_START;
+  submarine = new SubmarineClass(width / 2, height / 2, 6, submarineImage);
   initToxicBarrels(10); // initialize 10 barrels
   initUnderwaterMines(15);
 }
@@ -50,7 +50,7 @@ function initToxicBarrels(count) {
 
 function initUnderwaterMines(count) {
   for (let i = 0; i < count; i++) {
-    let position = getRandomPosition(100); // ensure at least 200px between each mine
+    let position = getRandomPosition(100); // make sure there is a distance between the mines
     underwaterMines.push(
       new UnderwaterMine(position.x, position.y, underwaterMineImg)
     );
@@ -134,8 +134,11 @@ function draw() {
     mine.display();
 
     if (submarine && !submarine.destroyed && submarine.checkCollision(mine)) {
-      explosion = new Explosion(mine.x + mine.width / 2, mine.y + mine.height / 2);
-      underwaterMines.splice(i, 1);  // remove the mine
+      explosion = new Explosion(
+        mine.x + mine.width / 2,
+        mine.y + mine.height / 2
+      );
+      underwaterMines.splice(i, 1); // remove the mine
       submarine.destroyed = true; // mark the submarine as destroyed
       break;
     }
@@ -148,7 +151,6 @@ function draw() {
       explosion = null;
     }
   }
-  
 
   // if (frameCount % 60 == 0 && timer > 0) {
   //   timer--;
@@ -158,7 +160,6 @@ function draw() {
     if (!isAttached) {
       if (submarine.checkCollision(toxicBarrels[i])) {
         if (keyIsPressed === true && keyCode == 32) {
-          // 32 is the keyCode for Spacebar, change it as per your needs
           attachedBarrel = toxicBarrels.splice(i, 1)[0]; // attach the barrel and remove it from the array
           isAttached = true;
           break;
@@ -179,16 +180,16 @@ function draw() {
   }
 
   //removing the barrel when the submarine is inside the container
-  let nearContainer = dist(submarine.x, submarine.y, 150, -20) < 50; 
+  let nearContainer = dist(submarine.x, submarine.y, 150, -20) < 50;
 
   if (keyIsPressed === true && keyCode == 32 && isAttached && nearContainer) {
-    attachedBarrel.x = 0; 
+    attachedBarrel.x = 0;
     attachedBarrel.y = 0;
     toxicBarrels.push(attachedBarrel);
     attachedBarrel = null;
     isAttached = false;
   }
-  
+
   for (let barrel of toxicBarrels) {
     barrel.display();
   }
@@ -241,7 +242,7 @@ class SubmarineClass {
     // Check for collision on the y-axis
     let collisionOnY =
       this.y + this.height - 3 >= barrel.y &&
-      this.y <= barrel.y + barrel.height - 50;
+      this.y <= barrel.y + barrel.height - 35;
 
     // Return true if collision on both axes, false otherwise
     return collisionOnX && collisionOnY;
@@ -259,7 +260,7 @@ class SubmarineClass {
   move() {
     if (this.destroyed) return;
     // Move the object if arrow keys are pressed
-    
+
     if (keyIsDown(LEFT_ARROW)) {
       this.x -= this.speed;
       this.mirror = true;
@@ -301,7 +302,7 @@ class UnderwaterMine {
     this.x = x;
     this.y = y;
     this.size = 50;
-    this.width = 35; 
+    this.width = 35;
     this.height = img.height * (this.width / img.width);
     this.img = img;
     this.speed = 1; // decrease speed for slower movement
@@ -316,7 +317,6 @@ class UnderwaterMine {
 
     // Keep the mine within the canvas
     this.x = constrain(this.x, 0, width - this.width);
-    
   }
 }
 
@@ -344,4 +344,3 @@ class Explosion {
     }
   }
 }
-
