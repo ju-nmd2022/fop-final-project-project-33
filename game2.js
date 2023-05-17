@@ -24,6 +24,9 @@ let underwaterMines = [];
 let timer = 60;
 let score = 100;
 
+let explosion = null;
+
+
 function preload() {
   backgroundImage = loadImage("/img/background2.png");
   submarineImage = loadImage("/img/submarine-graphic.png");
@@ -33,7 +36,7 @@ function preload() {
 }
 function setup() {
   let cnv = createCanvas(windowWidth, windowHeight);
-  submarine = new SubmarineClass(width / 2, height / 2, 4, submarineImage);
+  submarine = new SubmarineClass(150, 100, 6, submarineImage);
   initToxicBarrels(10); // initialize 10 barrels
   initUnderwaterMines(15);
 }
@@ -125,10 +128,27 @@ function draw() {
     barrel.display();
   }
 
-  for (let mine of underwaterMines) {
+  for (let i = underwaterMines.length - 1; i >= 0; i--) {
+    let mine = underwaterMines[i];
     mine.move();
     mine.display();
+
+    if (submarine && !submarine.destroyed && submarine.checkCollision(mine)) {
+      explosion = new Explosion(mine.x + mine.width / 2, mine.y + mine.height / 2);
+      underwaterMines.splice(i, 1);  // remove the mine
+      submarine.destroyed = true; // mark the submarine as destroyed
+      break;
+    }
   }
+
+  if (explosion) {
+    explosion.display();
+
+    if (explosion.finished) {
+      explosion = null;
+    }
+  }
+  
 
   // if (frameCount % 60 == 0 && timer > 0) {
   //   timer--;
@@ -159,7 +179,7 @@ function draw() {
   }
 
   //removing the barrel when the submarine is inside the container
-  let nearContainer = dist(submarine.x, submarine.y, 75, -20) < 50; 
+  let nearContainer = dist(submarine.x, submarine.y, 150, -20) < 50; 
 
   if (keyIsPressed === true && keyCode == 32 && isAttached && nearContainer) {
     attachedBarrel.x = 0; 
@@ -188,8 +208,11 @@ class SubmarineClass {
     this.height = this.img.height * (this.width / this.img.width);
     this.speed = speed;
     this.mirror = false;
+    this.destroyed = false;
   }
   display() {
+    if (!this) return;
+    if (this.destroyed) return;
     push();
 
     // Calculate the translation based on mirroring
@@ -223,8 +246,20 @@ class SubmarineClass {
     // Return true if collision on both axes, false otherwise
     return collisionOnX && collisionOnY;
   }
+
+  // the following checkCollision is from ChatGPT
+  checkCollision(object) {
+    return (
+      this.x < object.x + object.width &&
+      this.x + this.width > object.x &&
+      this.y < object.y + object.height &&
+      this.y + this.height > object.y
+    );
+  }
   move() {
+    if (this.destroyed) return;
     // Move the object if arrow keys are pressed
+    
     if (keyIsDown(LEFT_ARROW)) {
       this.x -= this.speed;
       this.mirror = true;
@@ -282,6 +317,31 @@ class UnderwaterMine {
     // Keep the mine within the canvas
     this.x = constrain(this.x, 0, width - this.width);
     
+  }
+}
+
+class Explosion {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.size = 0;
+    this.alpha = 255;
+    this.finished = false;
+  }
+
+  display() {
+    if (this.alpha > 0) {
+      push();
+      fill(255, 0, 0, this.alpha);
+      noStroke();
+      ellipse(this.x, this.y, this.size, this.size);
+      pop();
+
+      this.size += 10;
+      this.alpha -= 4;
+    } else {
+      this.finished = true;
+    }
   }
 }
 
