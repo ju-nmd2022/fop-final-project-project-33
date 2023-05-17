@@ -1,4 +1,4 @@
-//Importing the necessary classes
+// Importing the necessary classes
 // import SubmarineClass from "./submarine.js";
 // import Mine from "./mine";
 // import ToxicBarrel from "./ToxicBarrel";
@@ -8,7 +8,7 @@ const STATE_START = 0;
 const STATE_PLAYING = 1;
 const STATE_GAME_OVER = 2;
 
-let gameState; // Variable used to switch and compare the states of the game
+let gameState = STATE_START; // Start the game at the start screen
 
 let submarineImage;
 let submarine;
@@ -21,6 +21,8 @@ let underwaterMineImg;
 let containerImage;
 let underwaterMines = [];
 
+let LogoImg;
+
 let timer = 60;
 let score = 100;
 
@@ -30,13 +32,14 @@ function preload() {
   backgroundImage = loadImage("/img/background2.png");
   submarineImage = loadImage("/img/submarine-graphic.png");
   toxicBarrelImg = loadImage("/img/toxic-barrel.png");
-  containerImage = loadImage("/img/container.png");
+  containerImage = loadImage("/img/container2.png");
   underwaterMineImg = loadImage("/img/underwater-mine.png");
+  LogoImg = loadImage("/img/Logo.png");
 }
+
 function setup() {
-  let cnv = createCanvas(window.innerWidth, window.innerHeight);
-  gameState = STATE_START;
-  submarine = new SubmarineClass(width / 2, height / 2, 6, submarineImage);
+  let cnv = createCanvas(windowWidth, windowHeight);
+  submarine = new SubmarineClass(150, 150, 6, submarineImage);
   initToxicBarrels(10); // initialize 10 barrels
   initUnderwaterMines(15);
 }
@@ -93,16 +96,16 @@ function checkDistance(x, y, minDist) {
   return false; // not too close to any barrel or mine
 }
 
-function collectionPointText() {
-  fill(0, 0, 139);
-  noStroke();
-  rect(20, 20, 190, 30);
+// function collectionPointText() {
+//   fill(0, 0, 139);
+//   noStroke();
+//   rect(20, 20, 190, 30);
 
-  textAlign(LEFT, TOP);
-  textSize(25);
-  fill(255);
-  text("Collection point", 25, 20);
-}
+//   textAlign(LEFT, TOP);
+//   textSize(25);
+//   fill(255);
+//   text("Collection Point", 25, 20);
+// }
 
 function displayTimerAndScore() {
   textSize(30);
@@ -119,6 +122,30 @@ function displayTimerAndScore() {
 }
 
 function draw() {
+  switch (gameState) {
+    case STATE_START:
+      drawStartScreen();
+      break;
+    case STATE_PLAYING:
+      drawGame();
+      break;
+    case STATE_GAME_OVER:
+      drawGameOverScreen();
+      break;
+  }
+}
+
+function drawStartScreen() {
+  background(0);
+  image(backgroundImage, 0, 0, windowWidth, windowHeight);
+  image(LogoImg, width / 2 - 300, height / 2 - 350);
+  fill(255);
+  textAlign(CENTER, CENTER);
+  textSize(60);
+  text("Press ENTER to Start", width / 2, height / 2);
+}
+
+function drawGame() {
   background(255);
   image(backgroundImage, 0, 0, windowWidth, windowHeight);
   submarine.display();
@@ -133,13 +160,18 @@ function draw() {
     mine.move();
     mine.display();
 
-    if (submarine && !submarine.destroyed && submarine.checkCollision(mine)) {
+    if (
+      submarine &&
+      !submarine.destroyed &&
+      submarine.checkCollisionMine(mine)
+    ) {
       explosion = new Explosion(
         mine.x + mine.width / 2,
         mine.y + mine.height / 2
       );
       underwaterMines.splice(i, 1); // remove the mine
       submarine.destroyed = true; // mark the submarine as destroyed
+
       break;
     }
   }
@@ -149,12 +181,13 @@ function draw() {
 
     if (explosion.finished) {
       explosion = null;
+      gameState = STATE_GAME_OVER;
     }
   }
 
-  // if (frameCount % 60 == 0 && timer > 0) {
-  //   timer--;
-  // }
+  if (frameCount % 60 == 0 && timer > 0) {
+    timer--;
+  }
 
   for (let i = 0; i < toxicBarrels.length; i++) {
     if (!isAttached) {
@@ -180,12 +213,12 @@ function draw() {
   }
 
   //removing the barrel when the submarine is inside the container
-  let nearContainer = dist(submarine.x, submarine.y, 150, -20) < 50;
+  let nearContainer = dist(submarine.x, submarine.y, 150, -20) < 100;
 
   if (keyIsPressed === true && keyCode == 32 && isAttached && nearContainer) {
     attachedBarrel.x = 0;
     attachedBarrel.y = 0;
-    toxicBarrels.push(attachedBarrel);
+    // toxicBarrels.push(attachedBarrel);
     attachedBarrel = null;
     isAttached = false;
   }
@@ -193,9 +226,42 @@ function draw() {
   for (let barrel of toxicBarrels) {
     barrel.display();
   }
-  image(containerImage, -80, -190, 400, 400);
-  collectionPointText();
+  image(containerImage, -20, -150, 280, 280);
+  // collectionPointText();
   displayTimerAndScore();
+}
+
+function drawGameOverScreen() {
+  background(0);
+  fill(255);
+  textAlign(CENTER, CENTER);
+  textSize(60);
+  text("GAME OVER", width / 2, height / 2);
+  textSize(30);
+  text("Press R to Restart", width / 2, height / 2 + 50);
+}
+
+function keyPressed() {
+  if (gameState === STATE_START && keyCode === ENTER) {
+    gameState = STATE_PLAYING;
+  } else if (gameState === STATE_GAME_OVER && key === "r") {
+    resetGame();
+    gameState = STATE_START;
+  }
+}
+
+function resetGame() {
+  toxicBarrels = [];
+  underwaterMines = [];
+  initToxicBarrels(10); // reinitialize 10 barrels
+  initUnderwaterMines(15); // reinitialize 15 mines
+  submarine.x = 150;
+  submarine.y = 100;
+  attachedBarrel = null;
+  isAttached = false;
+  submarine.destroyed = false;
+  timer = 60;
+  score = 100;
 }
 
 class SubmarineClass {
@@ -249,7 +315,7 @@ class SubmarineClass {
   }
 
   // the following checkCollision is from ChatGPT
-  checkCollision(object) {
+  checkCollisionMine(object) {
     return (
       this.x < object.x + object.width &&
       this.x + this.width > object.x &&
@@ -343,4 +409,8 @@ class Explosion {
       this.finished = true;
     }
   }
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
 }
