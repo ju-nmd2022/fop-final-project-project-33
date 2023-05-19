@@ -10,23 +10,25 @@ const STATE_GAME_OVER = 2;
 
 let gameState = STATE_START; // Start the game at the start screen
 
-let submarineImage;
-let submarine;
-let toxicBarrelImg;
-let toxicBarrels = [];
-let backgroundImage;
+let submarineImage; //Submarine image variable
+let submarine; // variable used to create the submarine
+let toxicBarrelImg; // Toxic barrel variable
+let toxicBarrels = []; //Array used to store the barrels
+let backgroundImage; // variable for the background
 let attachedBarrel = null;
 let isAttached = false;
-let underwaterMineImg;
-let containerImage;
-let underwaterMines = [];
+let underwaterMineImg; // Mine image variable
+let containerImage; // Variable for the collection point image
+let underwaterMines = []; // Array used to store the mines
 
-let LogoImg;
+let LogoImg; // Variable used to load the logo of the game.
 
 let timer = 60;
 let score = 100;
 
 let explosion = null;
+let winState=false;
+let button1, button2;
 
 function preload() {
   backgroundImage = loadImage("/img/background2.png");
@@ -35,13 +37,49 @@ function preload() {
   containerImage = loadImage("/img/container2.png");
   underwaterMineImg = loadImage("/img/underwater-mine.png");
   LogoImg = loadImage("/img/Logo.png");
+  explosionImage = loadImage("/img/explosion.jpeg");
 }
 
 function setup() {
   let cnv = createCanvas(windowWidth, windowHeight);
-  submarine = new SubmarineClass(150, 150, 6, submarineImage);
-  initToxicBarrels(10); // initialize 10 barrels
+
+  button1 = createButton("Level 1");
+  button2 = createButton("Level 2");
+  button1.position(width / 2 - 100, height / 2 + 50);
+  button2.position(width / 2 + 70, height / 2 + 50);
+
+  button1.addClass("button-style");
+  button2.addClass("button-style");
+  button1.mousePressed(startLevel1);
+  button2.mousePressed(startLevel2);
+
+  submarine = new SubmarineClass(150, 150, 8, submarineImage);
+  // initToxicBarrels(10); // initialize 10 barrels
+  // initUnderwaterMines(15);
+}
+
+function startLevel1() {
+  gameState = STATE_PLAYING;
+  initToxicBarrels(1);
   initUnderwaterMines(15);
+  hideButtons();
+}
+
+function startLevel2() {
+  gameState = STATE_PLAYING;
+  initToxicBarrels(15);
+  initUnderwaterMines(20);
+  hideButtons();
+}
+
+function hideButtons() {
+  button1.hide();
+  button2.hide();
+}
+
+function showButtons() {
+  button1.show();
+  button2.show();
 }
 
 function initToxicBarrels(count) {
@@ -139,11 +177,11 @@ function draw() {
 function drawStartScreen() {
   background(0);
   image(backgroundImage, 0, 0, windowWidth, windowHeight);
-  image(LogoImg, width / 2 - 300, height / 2 - 350);
+  image(LogoImg, width / 2 - 265, height / 2 - 350);
   fill(255);
   textAlign(CENTER, CENTER);
   textSize(60);
-  text("Press ENTER to Start", width / 2, height / 2);
+  // text("Press ENTER to Start", width / 2, height / 2);
 }
 
 function drawGame() {
@@ -202,6 +240,13 @@ function drawGame() {
       }
     }
   }
+  if (toxicBarrels.length == 0 && !isAttached && timer>0) {
+    winState = true;
+    gameState=STATE_GAME_OVER;
+  
+  } else if (timer == 0){
+    gameState = STATE_GAME_OVER;
+  }
 
   // display attached barrel
   if (attachedBarrel) {
@@ -234,13 +279,26 @@ function drawGame() {
 }
 
 function drawGameOverScreen() {
-  background(0);
-  fill(255);
+  
+  if(winState){
+    background(0);
+    fill(255);
+    textAlign(CENTER,CENTER);
+    textSize(60);
+    text("Congrats, you managed to save the lake in time",width/2,height/2);
+    textSize(30);
+    text("Press R to Restart", width / 2, height / 2 + 50);
+    
+  }else{
+    background(0);
+    image(explosionImage, 0, 0, windowWidth, windowHeight);
+  fill(255, 0, 0);
   textAlign(CENTER, CENTER);
-  textSize(60);
+  textSize(100);
   text("GAME OVER", width / 2, height / 2);
-  textSize(30);
-  text("Press R to Restart", width / 2, height / 2 + 50);
+  textSize(40);
+  text("Press R to Restart", width / 2, height / 2 + 100);
+  }
 }
 
 function keyPressed() {
@@ -255,15 +313,15 @@ function keyPressed() {
 function resetGame() {
   toxicBarrels = [];
   underwaterMines = [];
-  initToxicBarrels(10); // reinitialize 10 barrels
-  initUnderwaterMines(15); // reinitialize 15 mines
   submarine.x = 150;
-  submarine.y = 100;
+  submarine.y = 150;
   attachedBarrel = null;
   isAttached = false;
   submarine.destroyed = false;
   timer = 60;
   score = 100;
+  winState=false;
+  showButtons();
 }
 
 class SubmarineClass {
@@ -415,4 +473,6 @@ class Explosion {
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
+  button1.position(width / 2 - 100, height / 2 + 50);
+  button2.position(width / 2 + 70, height / 2 + 50);
 }

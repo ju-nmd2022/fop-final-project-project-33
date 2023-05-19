@@ -12,3 +12,26 @@ html {
 canvas {
   display: block;
 }
+
+.button-style {
+  background-color: orangered;
+  padding: 15px;
+  border: none;
+  color: white;
+  
+  margin: 0;
+  border-radius: 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+
+  transition-duration: 0.2s;
+  cursor: pointer;
+}
+
+.button-style:hover {
+  background-color: white;
+  color: black;
+  border: 2px solid #4caf50;
+}
