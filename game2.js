@@ -32,6 +32,8 @@ let explosion = null;
 let winState = false;
 let button1, button2;
 
+let explosionSound;
+
 function preload() {
   backgroundImage = loadImage("/img/background2.png");
   submarineImage = loadImage("/img/submarine-graphic.png");
@@ -40,14 +42,22 @@ function preload() {
   underwaterMineImg = loadImage("/img/underwater-mine.png");
   LogoImg = loadImage("/img/Logo.png");
   explosionImage = loadImage("/img/explosion.jpeg");
+<<<<<<< Updated upstream
   VictoryImg = loadImage("/img/VictoryScreen.png");
   backgroundSound = loadSound("/img/backgroundMusic.mp3");
+=======
+  explosionSound = loadSound("/img/explosion.mp3");
+>>>>>>> Stashed changes
 }
 
 function setup() {
   let cnv = createCanvas(windowWidth, windowHeight);
+<<<<<<< Updated upstream
   backgroundSound.play();
   backgroundSound.setVolume(0.1);
+=======
+explosionSound.setVolume(0.5);
+>>>>>>> Stashed changes
   button1 = createButton("Level 1");
   button2 = createButton("Level 2");
   button1.position(width / 2 - 100, height / 2 + 50);
@@ -222,10 +232,14 @@ function drawGame() {
 
   if (explosion) {
     explosion.display();
-
+    explosionSound.play();
     if (explosion.finished) {
       explosion = null;
+<<<<<<< Updated upstream
       backgroundSound.stop();
+=======
+      explosionSound.stop();
+>>>>>>> Stashed changes
       gameState = STATE_GAME_OVER;
     }
   }
