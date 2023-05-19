@@ -22,12 +22,14 @@ let containerImage; // Variable for the collection point image
 let underwaterMines = []; // Array used to store the mines
 
 let LogoImg; // Variable used to load the logo of the game.
+let VictoryImg;
+// let backgroundSound;
 
 let timer = 60;
 let score = 100;
 
 let explosion = null;
-let winState=false;
+let winState = false;
 let button1, button2;
 
 function preload() {
@@ -38,11 +40,14 @@ function preload() {
   underwaterMineImg = loadImage("/img/underwater-mine.png");
   LogoImg = loadImage("/img/Logo.png");
   explosionImage = loadImage("/img/explosion.jpeg");
+  VictoryImg = loadImage("/img/VictoryScreen.png");
+  backgroundSound = loadSound("/img/backgroundMusic.mp3");
 }
 
 function setup() {
   let cnv = createCanvas(windowWidth, windowHeight);
-
+  backgroundSound.play();
+  backgroundSound.setVolume(0.1);
   button1 = createButton("Level 1");
   button2 = createButton("Level 2");
   button1.position(width / 2 - 100, height / 2 + 50);
@@ -160,7 +165,6 @@ function displayTimerAndScore() {
 }
 
 function draw() {
-
   switch (gameState) {
     case STATE_START:
       drawStartScreen();
@@ -221,6 +225,7 @@ function drawGame() {
 
     if (explosion.finished) {
       explosion = null;
+      backgroundSound.stop();
       gameState = STATE_GAME_OVER;
     }
   }
@@ -240,11 +245,12 @@ function drawGame() {
       }
     }
   }
-  if (toxicBarrels.length == 0 && !isAttached && timer>0) {
+  if (toxicBarrels.length == 0 && !isAttached && timer > 0) {
     winState = true;
-    gameState=STATE_GAME_OVER;
-  
-  } else if (timer == 0){
+    backgroundSound.stop();
+    gameState = STATE_GAME_OVER;
+  } else if (timer == 0) {
+    backgroundSound.stop();
     gameState = STATE_GAME_OVER;
   }
 
@@ -279,25 +285,21 @@ function drawGame() {
 }
 
 function drawGameOverScreen() {
-  
-  if(winState){
-    background(0);
-    fill(255);
-    textAlign(CENTER,CENTER);
-    textSize(60);
-    text("Congrats, you managed to save the lake in time",width/2,height/2);
-    textSize(30);
+  if (winState) {
+    image(VictoryImg, 0, 0, windowWidth, windowHeight);
+    fill(0);
+    textAlign(CENTER, CENTER);
+    textStyle(BOLD);
     text("Press R to Restart", width / 2, height / 2 + 50);
-    
-  }else{
+  } else {
     background(0);
     image(explosionImage, 0, 0, windowWidth, windowHeight);
-  fill(255, 0, 0);
-  textAlign(CENTER, CENTER);
-  textSize(100);
-  text("GAME OVER", width / 2, height / 2);
-  textSize(40);
-  text("Press R to Restart", width / 2, height / 2 + 100);
+    fill(255, 0, 0);
+    textAlign(CENTER, CENTER);
+    textSize(100);
+    text("GAME OVER", width / 2, height / 2);
+    textSize(40);
+    text("Press R to Restart", width / 2, height / 2 + 100);
   }
 }
 
@@ -320,7 +322,8 @@ function resetGame() {
   submarine.destroyed = false;
   timer = 60;
   score = 100;
-  winState=false;
+  winState = false;
+  backgroundSound.play();
   showButtons();
 }
 
