@@ -122,6 +122,7 @@ function displayTimerAndScore() {
 }
 
 function draw() {
+
   switch (gameState) {
     case STATE_START:
       drawStartScreen();
@@ -147,6 +148,7 @@ function drawStartScreen() {
 
 function drawGame() {
   background(255);
+
   image(backgroundImage, 0, 0, windowWidth, windowHeight);
   submarine.display();
   submarine.move();
@@ -185,7 +187,7 @@ function drawGame() {
     }
   }
 
-  if (frameCount % 60 == 0 && timer > 0) {
+  if (frameCount % 30 == 0 && timer > 0) {
     timer--;
   }
 
