@@ -42,22 +42,16 @@ function preload() {
   underwaterMineImg = loadImage("/img/underwater-mine.png");
   LogoImg = loadImage("/img/Logo.png");
   explosionImage = loadImage("/img/explosion.jpeg");
-<<<<<<< Updated upstream
   VictoryImg = loadImage("/img/VictoryScreen.png");
   backgroundSound = loadSound("/img/backgroundMusic.mp3");
-=======
   explosionSound = loadSound("/img/explosion.mp3");
->>>>>>> Stashed changes
 }
 
 function setup() {
   let cnv = createCanvas(windowWidth, windowHeight);
-<<<<<<< Updated upstream
   backgroundSound.play();
   backgroundSound.setVolume(0.1);
-=======
-explosionSound.setVolume(0.5);
->>>>>>> Stashed changes
+  explosionSound.setVolume(0.5);
   button1 = createButton("Level 1");
   button2 = createButton("Level 2");
   button1.position(width / 2 - 100, height / 2 + 50);
@@ -68,21 +62,23 @@ explosionSound.setVolume(0.5);
   button1.mousePressed(startLevel1);
   button2.mousePressed(startLevel2);
 
-  submarine = new SubmarineClass(150, 150, 8, submarineImage);
+  submarine = new SubmarineClass(150, 150, 10, submarineImage);
   // initToxicBarrels(10); // initialize 10 barrels
   // initUnderwaterMines(15);
 }
 
 function startLevel1() {
   gameState = STATE_PLAYING;
-  initToxicBarrels(1);
-  initUnderwaterMines(15);
+  submarine = new SubmarineClass(150, 150, 7, submarineImage);
+  initToxicBarrels(6);
+  initUnderwaterMines(10);
   hideButtons();
 }
 
 function startLevel2() {
   gameState = STATE_PLAYING;
-  initToxicBarrels(15);
+  submarine = new SubmarineClass(150, 150, 10, submarineImage);
+  initToxicBarrels(8);
   initUnderwaterMines(20);
   hideButtons();
 }
@@ -225,26 +221,23 @@ function drawGame() {
       );
       underwaterMines.splice(i, 1); // remove the mine
       submarine.destroyed = true; // mark the submarine as destroyed
-
+      explosionSound.play();
       break;
     }
   }
 
   if (explosion) {
     explosion.display();
-    explosionSound.play();
+    
     if (explosion.finished) {
       explosion = null;
-<<<<<<< Updated upstream
       backgroundSound.stop();
-=======
       explosionSound.stop();
->>>>>>> Stashed changes
       gameState = STATE_GAME_OVER;
     }
   }
 
-  if (frameCount % 30 == 0 && timer > 0) {
+  if (frameCount % 60 == 0 && timer > 0) {
     timer--;
   }
 
