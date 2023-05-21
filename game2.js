@@ -23,7 +23,7 @@ let underwaterMines = []; // Array used to store the mines
 
 let LogoImg; // Variable used to load the logo of the game.
 let VictoryImg;
-// let backgroundSound;
+let backgroundSound;
 
 let timer = 60;
 let score = 100;
@@ -49,7 +49,7 @@ function preload() {
 
 function setup() {
   let cnv = createCanvas(windowWidth, windowHeight);
-  backgroundSound.play();
+
   backgroundSound.setVolume(0.1);
   explosionSound.setVolume(0.5);
   button1 = createButton("Level 1");
@@ -61,10 +61,6 @@ function setup() {
   button2.addClass("button-style");
   button1.mousePressed(startLevel1);
   button2.mousePressed(startLevel2);
-
-  submarine = new SubmarineClass(150, 150, 10, submarineImage);
-  // initToxicBarrels(10); // initialize 10 barrels
-  // initUnderwaterMines(15);
 }
 
 function startLevel1() {
@@ -73,6 +69,7 @@ function startLevel1() {
   initToxicBarrels(7);
   initUnderwaterMines(10);
   hideButtons();
+  backgroundSound.play();
 }
 
 function startLevel2() {
@@ -80,6 +77,7 @@ function startLevel2() {
   submarine = new SubmarineClass(150, 150, 9, submarineImage);
   initToxicBarrels(12);
   initUnderwaterMines(20);
+  backgroundSound.play();
   hideButtons();
 }
 
@@ -145,17 +143,6 @@ function checkDistance(x, y, minDist) {
   return false; // not too close to any barrel or mine
 }
 
-// function collectionPointText() {
-//   fill(0, 0, 139);
-//   noStroke();
-//   rect(20, 20, 190, 30);
-
-//   textAlign(LEFT, TOP);
-//   textSize(25);
-//   fill(255);
-//   text("Collection Point", 25, 20);
-// }
-
 function displayTimerAndScore() {
   textSize(30);
   fill(0, 255, 0);
@@ -163,11 +150,6 @@ function displayTimerAndScore() {
   // Display the timer
   text("Timer:", width - 200, 50);
   text(timer + " s", width - 70, 50);
-
-  // Display the score
-  fill(0, 0, 255);
-  text("Score:", width - 200, 90);
-  text(score, width - 70, 90);
 }
 
 function draw() {
@@ -188,10 +170,20 @@ function drawStartScreen() {
   background(0);
   image(backgroundImage, 0, 0, windowWidth, windowHeight);
   image(LogoImg, width / 2 - 265, height / 2 - 350);
+
   fill(255);
-  textAlign(CENTER, CENTER);
-  textSize(60);
-  // text("Press ENTER to Start", width / 2, height / 2);
+  textSize(40);
+  textStyle(BOLD);
+  textAlign(CENTER);
+  text("Choose Level:", windowWidth / 2 + 20, windowHeight / 2 + 15);
+  push();
+  fill(0, 255, 0);
+  textAlign(CENTER);
+  textSize(20);
+  text("Easy", width / 2 - 60, height / 2 + 120);
+  fill(255, 0, 0);
+  text("Hard", width / 2 + 115, height / 2 + 120);
+  pop();
 }
 
 function drawGame() {
@@ -228,7 +220,7 @@ function drawGame() {
 
   if (explosion) {
     explosion.display();
-    
+
     if (explosion.finished) {
       explosion = null;
       backgroundSound.stop();
@@ -330,7 +322,7 @@ function resetGame() {
   timer = 60;
   score = 100;
   winState = false;
-  backgroundSound.play();
+
   showButtons();
 }
 
