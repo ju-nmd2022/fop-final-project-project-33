@@ -70,15 +70,15 @@ function setup() {
 function startLevel1() {
   gameState = STATE_PLAYING;
   submarine = new SubmarineClass(150, 150, 7, submarineImage);
-  initToxicBarrels(6);
+  initToxicBarrels(7);
   initUnderwaterMines(10);
   hideButtons();
 }
 
 function startLevel2() {
   gameState = STATE_PLAYING;
-  submarine = new SubmarineClass(150, 150, 10, submarineImage);
-  initToxicBarrels(8);
+  submarine = new SubmarineClass(150, 150, 9, submarineImage);
+  initToxicBarrels(12);
   initUnderwaterMines(20);
   hideButtons();
 }
