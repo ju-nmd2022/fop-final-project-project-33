@@ -35,7 +35,7 @@ let button1, button2;
 let explosionSound;
 
 function preload() {
-  backgroundImage = loadImage("img/background2.png");
+  backgroundImage = loadImage("../img/background2.png");
   submarineImage = loadImage("/img/submarine-graphic.png");
   toxicBarrelImg = loadImage("/img/toxic-barrel.png");
   containerImage = loadImage("/img/container2.png");
