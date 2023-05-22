@@ -35,16 +35,16 @@ let button1, button2;
 let explosionSound;
 
 function preload() {
-  backgroundImage = loadImage("../img/background2.png");
-  submarineImage = loadImage("/img/submarine-graphic.png");
-  toxicBarrelImg = loadImage("/img/toxic-barrel.png");
-  containerImage = loadImage("/img/container2.png");
-  underwaterMineImg = loadImage("/img/underwater-mine.png");
-  LogoImg = loadImage("/img/Logo.png");
-  explosionImage = loadImage("/img/explosion.jpeg");
-  VictoryImg = loadImage("/img/VictoryScreen.png");
-  backgroundSound = loadSound("/img/backgroundMusic.mp3");
-  explosionSound = loadSound("/img/explosion.mp3");
+  backgroundImage = loadImage("./img/background2.png");
+  submarineImage = loadImage("./img/submarine-graphic.png");
+  toxicBarrelImg = loadImage("./img/toxic-barrel.png");
+  containerImage = loadImage("./img/container2.png");
+  underwaterMineImg = loadImage("./img/underwater-mine.png");
+  LogoImg = loadImage("./img/Logo.png");
+  explosionImage = loadImage("./img/explosion.jpeg");
+  VictoryImg = loadImage("./img/VictoryScreen.png");
+  backgroundSound = loadSound("./img/backgroundMusic.mp3");
+  explosionSound = loadSound("./img/explosion.mp3");
 }
 
 function setup() {
