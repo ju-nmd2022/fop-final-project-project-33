@@ -350,7 +350,6 @@ function resetGame() {
   isAttached = false;
   submarine.destroyed = false;
   timer = 60;
-  score = 100;
   winState = false;
 
   showButtons();
