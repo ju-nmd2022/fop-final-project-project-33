@@ -35,7 +35,7 @@ let button1, button2;
 let explosionSound;
 
 function preload() {
-  backgroundImage = loadImage("/img/background2.png");
+  backgroundImage = loadImage("../../img/background2.png");
   submarineImage = loadImage("/img/submarine-graphic.png");
   toxicBarrelImg = loadImage("/img/toxic-barrel.png");
   containerImage = loadImage("/img/container2.png");
@@ -172,23 +172,33 @@ function drawStartScreen() {
   image(LogoImg, width / 2 - 265, height / 2 - 350);
 
   //game description
-  push();  
-  fill(100, 100, 200);  
-  rect(20, height / 2 - 250, 360, 200);  
-  fill(255);  
-  textSize(16); 
-  textAlign(LEFT); 
-  text("Hello, Captain! Your job? Simple! Pilot your trusty sub, scoop up some nasty toxic barrels lurking in the depths, and drop 'em off in the container. Easy peasy, lemon squeezy! Just remember, the fishies are counting on you. No pressure!", 30, height / 2 - 230, 340);
-  pop(); 
+  push();
+  fill(100, 100, 200);
+  rect(20, height / 2 - 250, 360, 200);
+  fill(255);
+  textSize(16);
+  textAlign(LEFT);
+  text(
+    "Hello, Captain! Your job? Simple! Pilot your trusty sub, scoop up some nasty toxic barrels lurking in the depths, and drop 'em off in the container. Easy peasy, lemon squeezy! Just remember, the fishies are counting on you. No pressure!",
+    30,
+    height / 2 - 230,
+    340
+  );
+  pop();
 
-   // Controls description
-  push();  
-  fill(100, 100, 200);  
-  rect(width - 380, height / 2 - 250, 360, 200); 
-  fill(255);  
-  textSize(16);  
-  textAlign(LEFT); 
-  text("Use the arrow keys to navigate your submarine through the watery depths. Press the space bar to engage the submarine's collection mechanism when near a barrel. Once you've secured a barrel, transport it to the container and press the space bar again to safely deposit the waste.", width - 370, height / 2 - 230, 340);
+  // Controls description
+  push();
+  fill(100, 100, 200);
+  rect(width - 380, height / 2 - 250, 360, 200);
+  fill(255);
+  textSize(16);
+  textAlign(LEFT);
+  text(
+    "Use the arrow keys to navigate your submarine through the watery depths. Press the space bar to engage the submarine's collection mechanism when near a barrel. Once you've secured a barrel, transport it to the container and press the space bar again to safely deposit the waste.",
+    width - 370,
+    height / 2 - 230,
+    340
+  );
   pop();
 
   fill(255);
