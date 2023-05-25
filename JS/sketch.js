@@ -176,14 +176,14 @@ function drawStartScreen() {
   //game description
   push();
   fill(100, 100, 200);
-  rect(20, height / 2 - 250, 360, 200);
+  rect(20, height / 2 - 275, 360, 200, 20);
   fill(255);
   textSize(16);
   textLeading(25);
   text(
-    "Hello, Captain! Your job? Simple! Pilot your trusty submarine, and pick up the toxic waste that sank in the lake after the train crash and drop 'em off in the container. No pressure!",
+    "Hello, Captain! Your job? Simple! Pilot your trusty submarine, and pick up the toxic waste that sank in the lake after the train crash and drop 'em off in the container.           No pressure!",
     30,
-    height / 2 - 230,
+    height / 2 - 245,
     340
   );
   pop();
@@ -191,7 +191,7 @@ function drawStartScreen() {
   // Controls description
   push();
   fill(100, 100, 200);
-  rect(width - 380, height / 2 - 250, 360, 200);
+  rect(width - 380, height / 2 - 275, 360, 200, 20);
   fill(255);
   textSize(16);
   textAlign(CENTER);
@@ -199,7 +199,7 @@ function drawStartScreen() {
   text(
     "Use the arrow keys ➡️ ⬅️ ⬆️ ⬇️ to navigate your submarine. Press the SPACE bar to engage the submarine's magnet when near a barrel. Transport it to the container and press the SPACE bar again to safely deposit the waste.",
     width - 370,
-    height / 2 - 230,
+    height / 2 - 245,
     340
   );
 

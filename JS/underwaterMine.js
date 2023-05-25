@@ -15,8 +15,7 @@ class UnderwaterMine {
   
     move() {
       this.x += random(-this.speed, this.speed);
-      // removed this.y random movement
-  
+      
       // Keep the mine within the canvas
       this.x = constrain(this.x, 0, width - this.width);
     }
