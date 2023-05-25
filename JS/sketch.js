@@ -30,9 +30,9 @@ let backgroundSound;
 let timer = 60;
 let score = 100;
 
-// let explosion = null;
-let winState = false;
-let button1, button2;
+let winState = false; // Variable to check if all the barrels are collected
+
+let button1, button2; // Buttons for choosing the levels
 
 let explosionSound;
 
@@ -63,8 +63,11 @@ function setup() {
   button1.mousePressed(startLevel1);
   button2.mousePressed(startLevel2);
 }
+//Statements for import/export
 window.setup = setup;
 window.preload = preload;
+
+//Initializing the functions according to their levels of difficulty
 function startLevel1() {
   gameState = STATE_PLAYING;
   submarine = new SubmarineClass(150, 150, 6, submarineImage); //Submarine position and speed
@@ -83,16 +86,19 @@ function startLevel2() {
   hideButtons();
 }
 
+//Function to hide the Level buttons once you choose a level.
 function hideButtons() {
   button1.hide();
   button2.hide();
 }
 
+//Function to make the level buttons to reappear when you restart the game
 function showButtons() {
   button1.show();
   button2.show();
 }
 
+//Function that creates a certain number of barrels at random locations using the getRandomPosition() function
 function initToxicBarrels(count) {
   for (let i = 0; i < count; i++) {
     let position = getRandomPosition(150); //Distance between the barrels
@@ -109,6 +115,7 @@ function initUnderwaterMines(count) {
   }
 }
 
+//Generating random positions while checking for a certain distance between them.
 function getRandomPosition(minDist) {
   let x, y;
   if (toxicBarrels.length > 0 || underwaterMines.length > 0) {
@@ -123,12 +130,15 @@ function getRandomPosition(minDist) {
   return createVector(x, y);
 }
 
+//Function to make sure the random positions avoid the collection point
 function checkExclusionZone(x, y) {
   let containerWidth = 400;
   let containerHeight = 400;
   return (x < 200 && y < 200) || (x < containerWidth && y < containerHeight);
 }
 
+//Function used to condition the generation of random positions.
+//If it returns false, the generated position is valid
 function checkDistance(x, y, minDist) {
   for (let barrel of toxicBarrels) {
     let d = dist(x, y, barrel.x, barrel.y);
@@ -227,10 +237,12 @@ function drawGame() {
   submarine.display();
   submarine.move();
 
+  //Displaying the barrels
   for (let barrel of toxicBarrels) {
     barrel.display();
   }
 
+  //Displaying the mines + Checking collisions + removing mine and submarine if a collision is detected
   for (let i = underwaterMines.length - 1; i >= 0; i--) {
     let mine = underwaterMines[i];
     mine.move();
@@ -263,6 +275,7 @@ function drawGame() {
     }
   }
 
+  //Creating the timer
   if (frameCount % 60 == 0 && timer > 0) {
     timer--;
   }
@@ -304,16 +317,11 @@ function drawGame() {
   if (keyIsPressed === true && keyCode == 32 && isAttached && nearContainer) {
     attachedBarrel.x = 0;
     attachedBarrel.y = 0;
-    // toxicBarrels.push(attachedBarrel);
-    attachedBarrel = null;
+    attachedBarrel = null; // removing the barrel once is collected
     isAttached = false;
   }
 
-  for (let barrel of toxicBarrels) {
-    barrel.display();
-  }
   image(containerImage, -20, -150, 280, 280);
-  // collectionPointText();
   displayTimerAndScore();
 }
 
@@ -337,14 +345,14 @@ function drawGameOverScreen() {
 }
 
 function keyPressed() {
-  if (gameState === STATE_START && keyCode === ENTER) {
-    gameState = STATE_PLAYING;
-  } else if (gameState === STATE_GAME_OVER && key === "r") {
+  if ((gameState === STATE_GAME_OVER && key === "r") || key === "R") {
     resetGame();
     gameState = STATE_START;
   }
 }
 window.keyPressed = keyPressed;
+
+//function to reset the game once it ends
 function resetGame() {
   toxicBarrels = [];
   underwaterMines = [];
@@ -355,46 +363,12 @@ function resetGame() {
   submarine.destroyed = false;
   timer = 60;
   winState = false;
-
   showButtons();
 }
 
+//Resizing the canvas and repositioning the buttons
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
   button1.position(width / 2 - 100, height / 2 + 50);
   button2.position(width / 2 + 70, height / 2 + 50);
 }
-
-// function displayDescriptions() {
-//   let textTop = button.y + button.height + 10; // 10 pixels below the button
-
-//   // Game description
-//   push();
-//   fill(100, 100, 200);
-//   rect(20, textTop, 360, 200);
-//   fill(255);
-//   textSize(16);
-//   textAlign(LEFT);
-//   text(
-//     "Hello, Captain! Your job? Simple! Pilot your trusty sub, scoop up some nasty toxic barrels lurking in the depths, and drop 'em off in the container. Easy peasy, lemon squeezy! Just remember, the fishies are counting on you. No pressure!",
-//     30,
-//     textTop + 20,
-//     340
-//   ); // 20 pixels below the top of the rectangle
-//   pop();
-
-//   // Controls description
-//   push();
-//   fill(100, 100, 200);
-//   rect(width - 380, textTop, 360, 200);
-//   fill(255);
-//   textSize(16);
-//   textAlign(LEFT);
-//   text(
-//     "Use the arrow keys to navigate your submarine through the watery depths. Press the space bar to engage the submarine's collection mechanism when near a barrel. Once you've secured a barrel, transport it to the container and press the space bar again to safely deposit the waste.",
-//     width - 370,
-//     textTop + 20,
-//     340
-//   );
-//   pop();
-// }
