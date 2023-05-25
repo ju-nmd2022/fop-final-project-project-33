@@ -7,7 +7,7 @@ class UnderwaterMine {
       this.width = 35;
       this.height = img.height * (this.width / img.width);
       this.img = img;
-      this.speed = 1; // decrease speed for slower movement
+      this.speed = 1; // speed for movement of the mines
     }
     display() {
       image(this.img, this.x, this.y, this.width, this.height);

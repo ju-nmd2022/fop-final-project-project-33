@@ -10,31 +10,28 @@ const STATE_GAME_OVER = 2;
 
 let gameState = STATE_START; // Start the game at the start screen
 
-let submarineImage; //Submarine image variable
 let submarine; // variable used to create the submarine
-let toxicBarrelImg; // Toxic barrel variable
-let toxicBarrels = []; //Array used to store the barrels
-let backgroundImage; // variable for the background
 let attachedBarrel = null;
 let isAttached = false;
-let underwaterMineImg; // Mine image variable
-let containerImage; // Variable for the collection point image
-let underwaterMines = []; // Array used to store the mines
-let explosionImage;
 let explosion;
-
-let LogoImg; // Variable used to load the logo of the game.
-let VictoryImg;
-let backgroundSound;
-
 let timer = 60;
-let score = 100;
-
 let winState = false; // Variable to check if all the barrels are collected
-
 let button1, button2; // Buttons for choosing the levels
 
-let explosionSound;
+let LogoImg; // Variable used to load the logo of the game.
+let backgroundImage; // variable for the background
+let VictoryImg;// Win screen
+let submarineImage; //Submarine image variable
+let containerImage; // Variable for the collection point image
+let explosionImage; // losing screen
+let underwaterMineImg; // Mine image variable
+let toxicBarrelImg; // Toxic barrel variable
+
+let underwaterMines = []; // Array used to store the mines
+let toxicBarrels = []; //Array used to store the barrels
+
+let explosionSound; 
+let backgroundSound;
 
 function preload() {
   backgroundImage = loadImage("./img/background2.png");
@@ -106,6 +103,7 @@ function initToxicBarrels(count) {
   }
 }
 
+//Function that creates a certain number of mines at random locations using the getRandomPosition() function
 function initUnderwaterMines(count) {
   for (let i = 0; i < count; i++) {
     let position = getRandomPosition(100); //Distance between the mines
@@ -178,6 +176,8 @@ function draw() {
   }
 }
 window.draw = draw;
+
+// Draw the start screen
 function drawStartScreen() {
   background(0);
   image(backgroundImage, 0, 0, windowWidth, windowHeight);
@@ -291,6 +291,7 @@ function drawGame() {
       }
     }
   }
+  
   if (toxicBarrels.length == 0 && !isAttached && timer > 0) {
     winState = true;
     backgroundSound.stop();
