@@ -1,7 +1,7 @@
-// Importing the necessary classes
-// import SubmarineClass from "./submarine.js";
-// import Mine from "./mine";
-// import ToxicBarrel from "./ToxicBarrel";
+import Explosion from "./explosion.js";
+import UnderwaterMine from "./underwaterMine.js";
+import ToxicBarrel from "./toxicBarrel.js";
+import SubmarineClass from "./submarine.js";
 
 // Game State constants for the switch statement
 const STATE_START = 0;
@@ -21,6 +21,7 @@ let underwaterMineImg; // Mine image variable
 let containerImage; // Variable for the collection point image
 let underwaterMines = []; // Array used to store the mines
 let explosionImage;
+let explosion;
 
 let LogoImg; // Variable used to load the logo of the game.
 let VictoryImg;
@@ -29,7 +30,7 @@ let backgroundSound;
 let timer = 60;
 let score = 100;
 
-let explosion = null;
+// let explosion = null;
 let winState = false;
 let button1, button2;
 
@@ -50,7 +51,6 @@ function preload() {
 
 function setup() {
   let cnv = createCanvas(windowWidth, windowHeight);
-
   backgroundSound.setVolume(0.1);
   explosionSound.setVolume(0.5);
   button1 = createButton("Level 1");
@@ -63,157 +63,11 @@ function setup() {
   button1.mousePressed(startLevel1);
   button2.mousePressed(startLevel2);
 }
-
-class SubmarineClass {
-  constructor(x, y, speed, img) {
-    this.x = x;
-    this.y = y;
-    this.size = 50;
-    this.img = img;
-    //In order to keep the aspect ratio of the image we calculate the height based on the aspect ratio and desired width
-    this.width = 100; // desired width
-    this.height = this.img.height * (this.width / this.img.width);
-    this.speed = speed;
-    this.mirror = false;
-    this.destroyed = false;
-  }
-  display() {
-    if (!this) return;
-    if (this.destroyed) return;
-    push();
-
-    // Calculate the translation based on mirroring
-    let imageX = this.x;
-    if (this.mirror) {
-      translate(this.x + this.width, this.y);
-      scale(-1, 1);
-    } else {
-      translate(this.x, this.y);
-    }
-
-    image(this.img, 0, 0, this.width, this.height);
-
-    pop();
-  }
-  checkCollision(barrel) {
-    // Calculate the front of the submarine
-    //Using ternary operator to determine which way the submarine is facing
-    //So if this.mirror is true then submarineFront = this.x and if its false submarineFront = this.x+this.width
-    let submarineFront = this.mirror ? this.x : this.x + this.width;
-
-    // Check for collision on the x-axis
-    let collisionOnX =
-      submarineFront >= barrel.x && submarineFront <= barrel.x + barrel.width;
-
-    // Check for collision on the y-axis
-    let collisionOnY =
-      this.y + this.height - 3 >= barrel.y &&
-      this.y <= barrel.y + barrel.height - 35;
-
-    // Return true if collision on both axes, false otherwise
-    return collisionOnX && collisionOnY;
-  }
-
-  // the following checkCollision is from ChatGPT
-  checkCollisionMine(object) {
-    return (
-      this.x < object.x + object.width &&
-      this.x + this.width > object.x &&
-      this.y < object.y + object.height &&
-      this.y + this.height > object.y
-    );
-  }
-  move() {
-    if (this.destroyed) return;
-    // Move the object if arrow keys are pressed
-
-    if (keyIsDown(LEFT_ARROW)) {
-      this.x -= this.speed;
-      this.mirror = true;
-    }
-    if (keyIsDown(RIGHT_ARROW)) {
-      this.x += this.speed;
-      this.mirror = false;
-    }
-    if (keyIsDown(UP_ARROW)) {
-      this.y -= this.speed;
-    }
-    if (keyIsDown(DOWN_ARROW)) {
-      this.y += this.speed;
-    }
-
-    // Keep the object within the canvas
-    this.x = constrain(this.x, 0, width - this.width); // constrain by this.width and this.height
-    this.y = constrain(this.y, 0, height - this.height);
-  }
-}
-
-class ToxicBarrel {
-  constructor(x, y, img) {
-    this.x = x;
-    this.y = y;
-    this.size = 50;
-    //In order to keep the aspect ratio of the image we calculate the height based on the aspect ratio and desired width
-    this.width = 25; // desired width
-    this.height = img.height * (this.width / img.width);
-    this.img = img;
-  }
-  display() {
-    image(this.img, this.x, this.y, this.width, this.height);
-  }
-}
-
-class UnderwaterMine {
-  constructor(x, y, img) {
-    this.x = x;
-    this.y = y;
-    this.size = 50;
-    this.width = 35;
-    this.height = img.height * (this.width / img.width);
-    this.img = img;
-    this.speed = 1; // decrease speed for slower movement
-  }
-  display() {
-    image(this.img, this.x, this.y, this.width, this.height);
-  }
-
-  move() {
-    this.x += random(-this.speed, this.speed);
-    // removed this.y random movement
-
-    // Keep the mine within the canvas
-    this.x = constrain(this.x, 0, width - this.width);
-  }
-}
-
-class Explosion {
-  constructor(x, y) {
-    this.x = x;
-    this.y = y;
-    this.size = 0;
-    this.alpha = 255;
-    this.finished = false;
-  }
-
-  display() {
-    if (this.alpha > 0) {
-      push();
-      fill(255, 0, 0, this.alpha);
-      noStroke();
-      ellipse(this.x, this.y, this.size, this.size);
-      pop();
-
-      this.size += 10;
-      this.alpha -= 4;
-    } else {
-      this.finished = true;
-    }
-  }
-}
-
+window.setup = setup;
+window.preload = preload;
 function startLevel1() {
   gameState = STATE_PLAYING;
-  submarine = new SubmarineClass(150, 150, 6, submarineImage);//Submarine position and speed
+  submarine = new SubmarineClass(150, 150, 6, submarineImage); //Submarine position and speed
   initToxicBarrels(7);
   initUnderwaterMines(13);
   hideButtons();
@@ -222,7 +76,7 @@ function startLevel1() {
 
 function startLevel2() {
   gameState = STATE_PLAYING;
-  submarine = new SubmarineClass(150, 150, 8, submarineImage);//Submarine position and speed
+  submarine = new SubmarineClass(150, 150, 8, submarineImage); //Submarine position and speed
   initToxicBarrels(10);
   initUnderwaterMines(20);
   backgroundSound.play();
@@ -241,7 +95,7 @@ function showButtons() {
 
 function initToxicBarrels(count) {
   for (let i = 0; i < count; i++) {
-    let position = getRandomPosition(150);//Distance between the barrels
+    let position = getRandomPosition(150); //Distance between the barrels
     toxicBarrels.push(new ToxicBarrel(position.x, position.y, toxicBarrelImg));
   }
 }
@@ -313,7 +167,7 @@ function draw() {
       break;
   }
 }
-
+window.draw = draw;
 function drawStartScreen() {
   background(0);
   image(backgroundImage, 0, 0, windowWidth, windowHeight);
@@ -325,10 +179,13 @@ function drawStartScreen() {
   rect(20, height / 2 - 250, 360, 200);
   fill(255);
   textSize(16);
-  textAlign(LEFT);
+  textLeading(25);
   text(
-    "Hello, Captain! Your job? Simple! Pilot your trusty submarine, scoop up some nasty toxic barrels lurking in the depths, and drop 'em off in the container. Easy peasy, lemon squeezy! Just remember, the fishies are counting on you. No pressure!",
-    30, height / 2 - 230, 340);
+    "Hello, Captain! Your job? Simple! Pilot your trusty submarine, and pick up the toxic waste that sank in the lake after the train crash and drop 'em off in the container. No pressure!",
+    30,
+    height / 2 - 230,
+    340
+  );
   pop();
 
   // Controls description
@@ -337,13 +194,15 @@ function drawStartScreen() {
   rect(width - 380, height / 2 - 250, 360, 200);
   fill(255);
   textSize(16);
-  textAlign(LEFT);
+  textAlign(CENTER);
+  textLeading(25);
   text(
-    "Use the arrow keys to navigate your submarine through the watery depths. Press the space bar to engage the submarine's collection mechanism when near a barrel. Once you've secured a barrel, transport it to the container and press the space bar again to safely deposit the waste.",
+    "Use the arrow keys ➡️ ⬅️ ⬆️ ⬇️ to navigate your submarine. Press the SPACE bar to engage the submarine's magnet when near a barrel. Transport it to the container and press the SPACE bar again to safely deposit the waste.",
     width - 370,
     height / 2 - 230,
     340
   );
+
   pop();
 
   fill(255);
@@ -462,14 +321,14 @@ function drawGameOverScreen() {
   if (winState) {
     image(VictoryImg, 0, 0, windowWidth, windowHeight);
     fill(0);
-    textAlign(CENTER, CENTER);
+    textAlign(CENTER);
     textStyle(BOLD);
     text("Press R to Restart", width / 2, height / 2 + 50);
   } else {
     background(0);
     image(explosionImage, 0, 0, windowWidth, windowHeight);
     fill(255, 0, 0);
-    textAlign(CENTER, CENTER);
+    textAlign(CENTER);
     textSize(100);
     text("GAME OVER", width / 2, height / 2);
     textSize(40);
@@ -485,7 +344,7 @@ function keyPressed() {
     gameState = STATE_START;
   }
 }
-
+window.keyPressed = keyPressed;
 function resetGame() {
   toxicBarrels = [];
   underwaterMines = [];
@@ -506,33 +365,36 @@ function windowResized() {
   button2.position(width / 2 + 70, height / 2 + 50);
 }
 
-function displayDescriptions() {
-  let textTop = button.y + button.height + 10;  // 10 pixels below the button
+// function displayDescriptions() {
+//   let textTop = button.y + button.height + 10; // 10 pixels below the button
 
-  // Game description
-  push();
-  fill(100, 100, 200);
-  rect(20, textTop, 360, 200);
-  fill(255);
-  textSize(16);
-  textAlign(LEFT);
-  text(
-    "Hello, Captain! Your job? Simple! Pilot your trusty sub, scoop up some nasty toxic barrels lurking in the depths, and drop 'em off in the container. Easy peasy, lemon squeezy! Just remember, the fishies are counting on you. No pressure!",
-    30, textTop + 20, 340);  // 20 pixels below the top of the rectangle
-  pop();
+//   // Game description
+//   push();
+//   fill(100, 100, 200);
+//   rect(20, textTop, 360, 200);
+//   fill(255);
+//   textSize(16);
+//   textAlign(LEFT);
+//   text(
+//     "Hello, Captain! Your job? Simple! Pilot your trusty sub, scoop up some nasty toxic barrels lurking in the depths, and drop 'em off in the container. Easy peasy, lemon squeezy! Just remember, the fishies are counting on you. No pressure!",
+//     30,
+//     textTop + 20,
+//     340
+//   ); // 20 pixels below the top of the rectangle
+//   pop();
 
-  // Controls description
-  push();
-  fill(100, 100, 200);
-  rect(width - 380, textTop, 360, 200);
-  fill(255);
-  textSize(16);
-  textAlign(LEFT);
-  text(
-    "Use the arrow keys to navigate your submarine through the watery depths. Press the space bar to engage the submarine's collection mechanism when near a barrel. Once you've secured a barrel, transport it to the container and press the space bar again to safely deposit the waste.",
-    width - 370,
-    textTop + 20,
-    340
-  );
-  pop();
-}
+//   // Controls description
+//   push();
+//   fill(100, 100, 200);
+//   rect(width - 380, textTop, 360, 200);
+//   fill(255);
+//   textSize(16);
+//   textAlign(LEFT);
+//   text(
+//     "Use the arrow keys to navigate your submarine through the watery depths. Press the space bar to engage the submarine's collection mechanism when near a barrel. Once you've secured a barrel, transport it to the container and press the space bar again to safely deposit the waste.",
+//     width - 370,
+//     textTop + 20,
+//     340
+//   );
+//   pop();
+// }
