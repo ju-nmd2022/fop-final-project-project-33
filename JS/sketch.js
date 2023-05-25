@@ -299,7 +299,7 @@ function drawGame() {
   }
 
   //removing the barrel when the submarine is inside the container
-  let nearContainer = dist(submarine.x, submarine.y, 150, -20) < 100;
+  let nearContainer = dist(submarine.x, submarine.y, 150, -20) < 120;
 
   if (keyIsPressed === true && keyCode == 32 && isAttached && nearContainer) {
     attachedBarrel.x = 0;
